@@ -34,8 +34,6 @@
 #include "limits.h"
 
 // Some useful constants
-#define STEP_MASK ((1<<X_STEP_BIT)|(1<<Y_STEP_BIT)|(1<<Z_STEP_BIT)) // All step bits
-#define DIRECTION_MASK ((1<<X_DIRECTION_BIT)|(1<<Y_DIRECTION_BIT)|(1<<Z_DIRECTION_BIT)) // All direction bits
 #define STEPPING_MASK (STEP_MASK | DIRECTION_MASK) // All stepping-related bits (step/direction)
 
 #define TICKS_PER_MICROSECOND (F_CPU/1000000)
@@ -45,7 +43,8 @@ static block_t *current_block;  // A pointer to the block currently being traced
 
 // Variables used by The Stepper Driver Interrupt
 static uint8_t out_bits;        // The next stepping-bits to be output
-static int32_t counter_x,       // Counter variables for the bresenham line tracer
+static int32_t counter_w,       // Counter variables for the bresenham line tracer
+               counter_x, 
                counter_y, 
                counter_z;       
 static uint32_t step_events_completed; // The number of step events executed in the current block
@@ -161,6 +160,7 @@ ISR(TIMER1_COMPA_vect)
       counter_x = -(current_block->step_event_count >> 1);
       counter_y = counter_x;
       counter_z = counter_x;
+      counter_w = counter_x;
       step_events_completed = 0;     
     } else {
       st_go_idle();
@@ -170,6 +170,11 @@ ISR(TIMER1_COMPA_vect)
   if (current_block != NULL) {
     // Execute step displacement profile by bresenham line algorithm
     out_bits = current_block->direction_bits;
+    counter_w += current_block->steps_w;
+    if (counter_w > 0) {
+      out_bits |= (1<<W_STEP_BIT);
+      counter_w -= current_block->step_event_count;
+    }
     counter_x += current_block->steps_x;
     if (counter_x > 0) {
       out_bits |= (1<<X_STEP_BIT);
@@ -352,7 +357,7 @@ static void set_step_events_per_minute(uint32_t steps_per_minute)
 void st_go_home()
 {
   limits_go_home();  
-  plan_set_current_position(0,0,0);
+  plan_set_current_position(0,0,0,0);
 }
 
 // Planner external interface to start stepper interrupt and execute the blocks in queue.

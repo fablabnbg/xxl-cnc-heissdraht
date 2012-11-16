@@ -31,19 +31,9 @@
 
 settings_t settings;
 
-// Version 1 outdated settings record
-typedef struct {
-  double steps_per_mm[3];
-  uint8_t microsteps;
-  uint8_t pulse_microseconds;
-  double default_feed_rate;
-  double default_seek_rate;
-  uint8_t invert_mask;
-  double mm_per_arc_segment;
-} settings_v1_t;
-
 // Default settings (used when resetting eeprom-settings)
 #define MICROSTEPS 8
+#define DEFAULT_W_STEPS_PER_MM (94.488188976378*MICROSTEPS)
 #define DEFAULT_X_STEPS_PER_MM (94.488188976378*MICROSTEPS)
 #define DEFAULT_Y_STEPS_PER_MM (94.488188976378*MICROSTEPS)
 #define DEFAULT_Z_STEPS_PER_MM (94.488188976378*MICROSTEPS)
@@ -53,9 +43,10 @@ typedef struct {
 #define DEFAULT_FEEDRATE 500.0
 #define DEFAULT_ACCELERATION (DEFAULT_FEEDRATE*60*60/10.0) // mm/min^2
 #define DEFAULT_JUNCTION_DEVIATION 0.05 // mm
-#define DEFAULT_STEPPING_INVERT_MASK ((1<<X_STEP_BIT)|(1<<Y_STEP_BIT)|(1<<Z_STEP_BIT))
+#define DEFAULT_STEPPING_INVERT_MASK ((1<<W_STEP_BIT)|(1<<X_STEP_BIT)|(1<<Y_STEP_BIT)|(1<<Z_STEP_BIT))
 
 void settings_reset() {
+  settings.steps_per_mm[W_AXIS] = DEFAULT_W_STEPS_PER_MM;
   settings.steps_per_mm[X_AXIS] = DEFAULT_X_STEPS_PER_MM;
   settings.steps_per_mm[Y_AXIS] = DEFAULT_Y_STEPS_PER_MM;
   settings.steps_per_mm[Z_AXIS] = DEFAULT_Z_STEPS_PER_MM;
@@ -70,6 +61,7 @@ void settings_reset() {
 
 void settings_dump() {
   printPgmString(PSTR("$0 = ")); printFloat(settings.steps_per_mm[X_AXIS]);
+  printPgmString(PSTR(" (steps/mm w)\r\n$1 = ")); printFloat(settings.steps_per_mm[W_AXIS]);
   printPgmString(PSTR(" (steps/mm x)\r\n$1 = ")); printFloat(settings.steps_per_mm[Y_AXIS]);
   printPgmString(PSTR(" (steps/mm y)\r\n$2 = ")); printFloat(settings.steps_per_mm[Z_AXIS]);
   printPgmString(PSTR(" (steps/mm z)\r\n$3 = ")); printInteger(settings.pulse_microseconds);
@@ -124,14 +116,6 @@ int read_settings() {
     if (!(memcpy_from_eeprom_with_checksum((char*)&settings, 1, sizeof(settings_t)))) {
       return(false);
     }
-  } else if (version == 1) {
-    // Migrate from settings version 1
-    if (!(memcpy_from_eeprom_with_checksum((char*)&settings, 1, sizeof(settings_v1_t)))) {
-      return(false);
-    }
-    settings.acceleration = DEFAULT_ACCELERATION;
-    settings.junction_deviation = DEFAULT_JUNCTION_DEVIATION;
-    write_settings();
   } else if ((version == 2) || (version == 3)) {
     // Migrate from settings version 2 and 3
     if (!(memcpy_from_eeprom_with_checksum((char*)&settings, 1, sizeof(settings_t)))) {

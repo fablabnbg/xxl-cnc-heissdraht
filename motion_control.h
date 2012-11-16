@@ -31,9 +31,9 @@
 // Execute linear motion in absolute millimeter coordinates. Feed rate given in millimeters/second
 // unless invert_feed_rate is true. Then the feed_rate means that the motion should be completed in
 // (1 minute)/feed_rate time.
-#define mc_line(x, y, z, feed_rate, invert_feed_rate) plan_buffer_line(x, y, z, feed_rate, invert_feed_rate) 
+#define mc_line(w, x, y, z, feed_rate, invert_feed_rate) plan_buffer_line(w, x, y, z, feed_rate, invert_feed_rate) 
 
-#define mc_set_current_position(x, y, z) plan_set_current_position(x, y, z) 
+#define mc_set_current_position(w, x, y, z) plan_set_current_position(w, x, y, z) 
 
 #ifdef __AVR_ATmega328P__
 // Execute an arc in offset mode format. position == current xyz, target == target xyz, 

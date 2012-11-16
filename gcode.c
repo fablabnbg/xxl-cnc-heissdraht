@@ -66,12 +66,13 @@ typedef struct {
   uint8_t program_flow;
   int8_t spindle_direction;
   double feed_rate, seek_rate;     /* Millimeters/second */
-  double position[3];              /* Where the interpreter considers the tool to be at this point in the code */
+  double position[4];              /* Where the interpreter considers the tool to be at this point in the code */
   uint8_t tool;
   int16_t spindle_speed;           /* RPM/100 */
   uint8_t plane_axis_0, 
           plane_axis_1, 
-          plane_axis_2;            // The axes of the selected plane  
+          plane_axis_2,
+          plane_axis_3;            // The axes of the selected plane  
 } parser_state_t;
 static parser_state_t gc;
 
@@ -79,18 +80,19 @@ static parser_state_t gc;
 
 static int next_statement(char *letter, double *double_ptr, char *line, uint8_t *char_counter);
 
-static void select_plane(uint8_t axis_0, uint8_t axis_1, uint8_t axis_2) 
+static void select_plane(uint8_t axis_0, uint8_t axis_1, uint8_t axis_2, uint8_t axis_3) 
 {
   gc.plane_axis_0 = axis_0;
   gc.plane_axis_1 = axis_1;
   gc.plane_axis_2 = axis_2;
+  gc.plane_axis_3 = axis_3;
 }
 
 void gc_init() {
   memset(&gc, 0, sizeof(gc));
   gc.feed_rate = settings.default_feed_rate;
   gc.seek_rate = settings.default_seek_rate;
-  select_plane(X_AXIS, Y_AXIS, Z_AXIS);
+  select_plane(W_AXIS, X_AXIS, Y_AXIS, Z_AXIS);
   gc.absolute_mode = true;
 }
 
@@ -112,7 +114,7 @@ uint8_t gc_execute_line(char *line) {
   uint8_t absolute_override = false;          /* 1 = absolute motion for this block only {G53} */
   uint8_t next_action = NEXT_ACTION_DEFAULT;  /* The action that will be taken by the parsed line */
   
-  double target[3], offset[3];  
+  double target[4], offset[4];  
   
   double p = 0, r = 0;
   int int_value;
@@ -132,9 +134,9 @@ uint8_t gc_execute_line(char *line) {
         case 3: gc.motion_mode = MOTION_MODE_CCW_ARC; break;
 #endif        
         case 4: next_action = NEXT_ACTION_DWELL; break;
-        case 17: select_plane(X_AXIS, Y_AXIS, Z_AXIS); break;
-        case 18: select_plane(X_AXIS, Z_AXIS, Y_AXIS); break;
-        case 19: select_plane(Y_AXIS, Z_AXIS, X_AXIS); break;
+        case 17: select_plane(X_AXIS, Y_AXIS, Z_AXIS, W_AXIS); break;
+        case 18: select_plane(X_AXIS, Z_AXIS, Y_AXIS, W_AXIS); break;
+        case 19: select_plane(Y_AXIS, Z_AXIS, X_AXIS, W_AXIS); break;
         case 20: gc.inches_mode = true; break;
         case 21: gc.inches_mode = false; break;
         case 28: case 30: next_action = NEXT_ACTION_GO_HOME; break;
@@ -193,11 +195,11 @@ uint8_t gc_execute_line(char *line) {
       case 'P': p = value; break;
       case 'R': r = unit_converted_value; radius_mode = true; break;
       case 'S': gc.spindle_speed = value; break;
-      case 'X': case 'Y': case 'Z':
+      case 'W': case 'X': case 'Y': case 'Z':
       if (gc.absolute_mode || absolute_override) {
-        target[letter - 'X'] = unit_converted_value;
+        target[letter - 'W'] = unit_converted_value;
       } else {
-        target[letter - 'X'] += unit_converted_value;
+        target[letter - 'W'] += unit_converted_value;
       }
       break;
     }
@@ -214,16 +216,16 @@ uint8_t gc_execute_line(char *line) {
     case NEXT_ACTION_GO_HOME: mc_go_home(); clear_vector(target); break;
     case NEXT_ACTION_DWELL: mc_dwell(p); break;   
     case NEXT_ACTION_SET_COORDINATE_OFFSET: 
-    mc_set_current_position(target[X_AXIS], target[Y_AXIS], target[Z_AXIS]);
+    mc_set_current_position(target[W_AXIS], target[X_AXIS], target[Y_AXIS], target[Z_AXIS]);
     break;
     case NEXT_ACTION_DEFAULT: 
     switch (gc.motion_mode) {
       case MOTION_MODE_CANCEL: break;
       case MOTION_MODE_SEEK:
-      mc_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], gc.seek_rate, false);
+      mc_line(target[W_AXIS], target[X_AXIS], target[Y_AXIS], target[Z_AXIS], gc.seek_rate, false);
       break;
       case MOTION_MODE_LINEAR:
-      mc_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], 
+      mc_line(target[W_AXIS], target[X_AXIS], target[Y_AXIS], target[Z_AXIS], 
         (gc.inverse_feed_rate_mode) ? inverse_feed_rate : gc.feed_rate, gc.inverse_feed_rate_mode);
       break;
 #ifdef __AVR_ATmega328P__
@@ -343,7 +345,7 @@ uint8_t gc_execute_line(char *line) {
   // As far as the parser is concerned, the position is now == target. In reality the
   // motion control system might still be processing the action and the real tool position
   // in any intermediate location.
-  memcpy(gc.position, target, sizeof(double)*3); // gc.position[] = target[];
+  memcpy(gc.position, target, sizeof(target)); // gc.position[] = target[];
   return(gc.status_code);
 }
 

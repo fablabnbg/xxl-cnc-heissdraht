@@ -28,9 +28,10 @@
 #define false 0
 #define true 1
 
-#define X_AXIS 0
-#define Y_AXIS 1
-#define Z_AXIS 2
+#define W_AXIS 0
+#define X_AXIS 1
+#define Y_AXIS 2
+#define Z_AXIS 3
 
 #define clear_vector(a) memset(a, 0, sizeof(a))
 #define clear_vector_double(a) memset(a, 0.0, sizeof(a))

@@ -42,8 +42,8 @@ static block_t block_buffer[BLOCK_BUFFER_SIZE];  // A ring buffer for motion ins
 static volatile uint8_t block_buffer_head;       // Index of the next block to be pushed
 static volatile uint8_t block_buffer_tail;       // Index of the block to process now
 
-static int32_t position[3];             // The current position of the tool in absolute steps
-static double previous_unit_vec[3];     // Unit vector of previous path line segment
+static int32_t position[4];             // The current position of the tool in absolute steps
+static double previous_unit_vec[4];     // Unit vector of previous path line segment
 static double previous_nominal_speed;   // Nominal speed of previous path line segment
 
 
@@ -322,10 +322,11 @@ block_t *plan_get_current_block()
 // Add a new linear movement to the buffer. x, y and z is the signed, absolute target position in 
 // millimeters. Feed rate specifies the speed of the motion. If feed rate is inverted, the feed
 // rate is taken to mean "frequency" and would complete the operation in 1/feed_rate minutes.
-void plan_buffer_line(double x, double y, double z, double feed_rate, uint8_t invert_feed_rate) 
+void plan_buffer_line(double w, double x, double y, double z, double feed_rate, uint8_t invert_feed_rate) 
 {  
   // Calculate target position in absolute steps
-  int32_t target[3];
+  int32_t target[4];
+  target[W_AXIS] = lround(w*settings.steps_per_mm[W_AXIS]);
   target[X_AXIS] = lround(x*settings.steps_per_mm[X_AXIS]);
   target[Y_AXIS] = lround(y*settings.steps_per_mm[Y_AXIS]);
   target[Z_AXIS] = lround(z*settings.steps_per_mm[Z_AXIS]);     
@@ -341,26 +342,29 @@ void plan_buffer_line(double x, double y, double z, double feed_rate, uint8_t in
 
   // Compute direction bits for this block
   block->direction_bits = 0;
+  if (target[W_AXIS] < position[W_AXIS]) { block->direction_bits |= (1<<W_DIRECTION_BIT); }
   if (target[X_AXIS] < position[X_AXIS]) { block->direction_bits |= (1<<X_DIRECTION_BIT); }
   if (target[Y_AXIS] < position[Y_AXIS]) { block->direction_bits |= (1<<Y_DIRECTION_BIT); }
   if (target[Z_AXIS] < position[Z_AXIS]) { block->direction_bits |= (1<<Z_DIRECTION_BIT); }
   
   // Number of steps for each axis
+  block->steps_w = labs(target[W_AXIS]-position[W_AXIS]);
   block->steps_x = labs(target[X_AXIS]-position[X_AXIS]);
   block->steps_y = labs(target[Y_AXIS]-position[Y_AXIS]);
   block->steps_z = labs(target[Z_AXIS]-position[Z_AXIS]);
-  block->step_event_count = max(block->steps_x, max(block->steps_y, block->steps_z));
+  block->step_event_count = max(block->steps_w, max(block->steps_x, max(block->steps_y, block->steps_z)));
 
   // Bail if this is a zero-length block
   if (block->step_event_count == 0) { return; };
   
   // Compute path vector in terms of absolute step target and current positions
-  double delta_mm[3];
+  double delta_mm[4];
+  delta_mm[W_AXIS] = (target[W_AXIS]-position[W_AXIS])/settings.steps_per_mm[W_AXIS];
   delta_mm[X_AXIS] = (target[X_AXIS]-position[X_AXIS])/settings.steps_per_mm[X_AXIS];
   delta_mm[Y_AXIS] = (target[Y_AXIS]-position[Y_AXIS])/settings.steps_per_mm[Y_AXIS];
   delta_mm[Z_AXIS] = (target[Z_AXIS]-position[Z_AXIS])/settings.steps_per_mm[Z_AXIS];
   block->millimeters = sqrt(square(delta_mm[X_AXIS]) + square(delta_mm[Y_AXIS]) + 
-                            square(delta_mm[Z_AXIS]));
+                            square(delta_mm[Z_AXIS]) + square(delta_mm[W_AXIS]));
   double inverse_millimeters = 1.0/block->millimeters;  // Inverse millimeters to remove multiple divides	
   
   // Calculate speed in mm/minute for each axis. No divide by zero due to previous checks.
@@ -385,8 +389,9 @@ void plan_buffer_line(double x, double y, double z, double feed_rate, uint8_t in
         settings.acceleration / (60 * ACCELERATION_TICKS_PER_SECOND )); // (step/min/acceleration_tick)
 
   // Compute path unit vector                            
-  double unit_vec[3];
+  double unit_vec[4];
 
+  unit_vec[W_AXIS] = delta_mm[W_AXIS]*inverse_millimeters;
   unit_vec[X_AXIS] = delta_mm[X_AXIS]*inverse_millimeters;
   unit_vec[Y_AXIS] = delta_mm[Y_AXIS]*inverse_millimeters;
   unit_vec[Z_AXIS] = delta_mm[Z_AXIS]*inverse_millimeters;  
@@ -406,7 +411,8 @@ void plan_buffer_line(double x, double y, double z, double feed_rate, uint8_t in
   if ((block_buffer_head != block_buffer_tail) && (previous_nominal_speed > 0.0)) {
     // Compute cosine of angle between previous and current path. (prev_unit_vec is negative)
     // NOTE: Max junction velocity is computed without sin() or acos() by trig half angle identity.
-    double cos_theta = - previous_unit_vec[X_AXIS] * unit_vec[X_AXIS] 
+    double cos_theta = - previous_unit_vec[Y_AXIS] * unit_vec[Y_AXIS] 
+                       - previous_unit_vec[X_AXIS] * unit_vec[X_AXIS] 
                        - previous_unit_vec[Y_AXIS] * unit_vec[Y_AXIS] 
                        - previous_unit_vec[Z_AXIS] * unit_vec[Z_AXIS] ;
                          
@@ -454,7 +460,8 @@ void plan_buffer_line(double x, double y, double z, double feed_rate, uint8_t in
 }
 
 // Reset the planner position vector and planner speed
-void plan_set_current_position(double x, double y, double z) {
+void plan_set_current_position(double w,double x, double y, double z) {
+  position[W_AXIS] = lround(w*settings.steps_per_mm[W_AXIS]);
   position[X_AXIS] = lround(x*settings.steps_per_mm[X_AXIS]);
   position[Y_AXIS] = lround(y*settings.steps_per_mm[Y_AXIS]);
   position[Z_AXIS] = lround(z*settings.steps_per_mm[Z_AXIS]);    

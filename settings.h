@@ -34,7 +34,7 @@
 
 // Current global settings (persisted in EEPROM from byte 1 onwards)
 typedef struct {
-  double steps_per_mm[3];
+  double steps_per_mm[4];
   uint8_t microsteps;
   uint8_t pulse_microseconds;
   double default_feed_rate;

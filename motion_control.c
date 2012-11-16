@@ -101,7 +101,7 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
   double cos_T = 1-0.5*theta_per_segment*theta_per_segment; // Small angle approximation
   double sin_T = theta_per_segment;
   
-  double arc_target[3];
+  double arc_target[4];
   double sin_Ti;
   double cos_Ti;
   double r_axisi;
@@ -133,11 +133,11 @@ void mc_arc(double *position, double *target, double *offset, uint8_t axis_0, ui
     arc_target[axis_0] = center_axis0 + r_axis0;
     arc_target[axis_1] = center_axis1 + r_axis1;
     arc_target[axis_linear] += linear_per_segment;
-    plan_buffer_line(arc_target[X_AXIS], arc_target[Y_AXIS], arc_target[Z_AXIS], feed_rate, invert_feed_rate);
+    plan_buffer_line(arc_target[W_AXIS],arc_target[X_AXIS], arc_target[Y_AXIS], arc_target[Z_AXIS], feed_rate, invert_feed_rate);
     
   }
   // Ensure last segment arrives at target location.
-  plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], feed_rate, invert_feed_rate);
+  plan_buffer_line(target[W_AXIS], target[X_AXIS], target[Y_AXIS], target[Z_AXIS], feed_rate, invert_feed_rate);
 }
 #endif
 
