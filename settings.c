@@ -60,10 +60,10 @@ void settings_reset() {
 }
 
 void settings_dump() {
-  printPgmString(PSTR("$0 = ")); printFloat(settings.steps_per_mm[X_AXIS]);
-  printPgmString(PSTR(" (steps/mm w)\r\n$1 = ")); printFloat(settings.steps_per_mm[W_AXIS]);
-  printPgmString(PSTR(" (steps/mm x)\r\n$1 = ")); printFloat(settings.steps_per_mm[Y_AXIS]);
-  printPgmString(PSTR(" (steps/mm y)\r\n$2 = ")); printFloat(settings.steps_per_mm[Z_AXIS]);
+  printPgmString(PSTR("$0 = ")); printFloat(settings.steps_per_mm[W_AXIS]);
+  printPgmString(PSTR(" (steps/mm w)\r\n$1 = ")); printFloat(settings.steps_per_mm[X_AXIS]);
+  printPgmString(PSTR(" (steps/mm x)\r\n$2 = ")); printFloat(settings.steps_per_mm[Y_AXIS]);
+  printPgmString(PSTR(" (steps/mm y)\r\n$10 = ")); printFloat(settings.steps_per_mm[Z_AXIS]);
   printPgmString(PSTR(" (steps/mm z)\r\n$3 = ")); printInteger(settings.pulse_microseconds);
   printPgmString(PSTR(" (microseconds step pulse)\r\n$4 = ")); printFloat(settings.default_feed_rate);
   printPgmString(PSTR(" (mm/min default feed rate)\r\n$5 = ")); printFloat(settings.default_seek_rate);
@@ -133,12 +133,16 @@ int read_settings() {
 // A helper method to set settings from command line
 void settings_store_setting(int parameter, double value) {
   switch(parameter) {
-    case 0: case 1: case 2:
+    case 0: case 1: case 2: case 10:
     if (value <= 0.0) {
       printPgmString(PSTR("Steps/mm must be > 0.0\r\n"));
       return;
     }
-    settings.steps_per_mm[parameter] = value; break;
+    if (parameter==10){
+      settings.steps_per_mm[3] = value; break;
+    }else{
+      settings.steps_per_mm[parameter] = value; break;
+    }
     case 3: 
     if (value < 3) {
       printPgmString(PSTR("Step pulse must be >= 3 microseconds\r\n"));

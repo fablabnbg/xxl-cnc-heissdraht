@@ -29,12 +29,12 @@
 // Updated default pin-assignments from 0.6 onwards 
 // (see bottom of file for a copy of the old config)
 
-#define STEPPERS_DISABLE_DDR     DDRB
-#define STEPPERS_DISABLE_PORT    PORTB
-#define STEPPERS_DISABLE_BIT         0
+#define STEPPERS_DISABLE_DDR     DDRD
+#define STEPPERS_DISABLE_PORT    PORTD
+#define STEPPERS_DISABLE_BIT         2
 
-#define STEPPING_DDR       DDRD
-#define STEPPING_PORT      PORTD
+#define STEPPING_DDR       DDRB
+#define STEPPING_PORT      PORTB
 #define W_STEP_BIT           0
 #define X_STEP_BIT           1
 #define Y_STEP_BIT           2
@@ -44,20 +44,20 @@
 #define Y_DIRECTION_BIT      6
 #define Z_DIRECTION_BIT      7
 
-#define LIMIT_DDR      DDRB
-#define LIMIT_PIN     PINB
-#define W_LIMIT_BIT          1
-#define X_LIMIT_BIT          2
-#define Y_LIMIT_BIT          3
-#define Z_LIMIT_BIT          4
+#define LIMIT_DDR      DDRD
+#define LIMIT_PIN     PIND
+#define W_LIMIT_BIT          3
+#define X_LIMIT_BIT          4
+#define Y_LIMIT_BIT          5
+#define Z_LIMIT_BIT          6
 
-#define SPINDLE_ENABLE_DDR DDRB
-#define SPINDLE_ENABLE_PORT PORTB
-#define SPINDLE_ENABLE_BIT 5
+#define SPINDLE_ENABLE_DDR DDRD
+#define SPINDLE_ENABLE_PORT PORTD
+#define SPINDLE_ENABLE_BIT 7
 
-#define SPINDLE_DIRECTION_DDR DDRB
-#define SPINDLE_DIRECTION_PORT PORTB
-#define SPINDLE_DIRECTION_BIT 6
+#define SPINDLE_DIRECTION_DDR DDRC
+#define SPINDLE_DIRECTION_PORT PORTC
+#define SPINDLE_DIRECTION_BIT 0
 
 // This parameter sets the delay time before disabling the steppers after the final block of movement.
 // A short delay ensures the steppers come to a complete stop and the residual inertial force in the 

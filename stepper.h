@@ -24,9 +24,9 @@
 #include <avr/io.h>
 #include <avr/sleep.h>
 
-#define LIMIT_MASK ((1<<X_LIMIT_BIT)|(1<<X_LIMIT_BIT)|(1<<Y_LIMIT_BIT)|(1<<Z_LIMIT_BIT)) // All limit bits
-#define STEP_MASK ((1<<X_STEP_BIT)|(1<<X_STEP_BIT)|(1<<Y_STEP_BIT)|(1<<Z_STEP_BIT)) // All step bits
-#define DIRECTION_MASK ((1<<X_DIRECTION_BIT)|(1<<X_DIRECTION_BIT)|(1<<Y_DIRECTION_BIT)|(1<<Z_DIRECTION_BIT)) // All direction bits
+#define LIMIT_MASK ((1<<W_LIMIT_BIT)|(1<<X_LIMIT_BIT)|(1<<Y_LIMIT_BIT)|(1<<Z_LIMIT_BIT)) // All limit bits
+#define STEP_MASK ((1<<W_STEP_BIT)|(1<<X_STEP_BIT)|(1<<Y_STEP_BIT)|(1<<Z_STEP_BIT)) // All step bits
+#define DIRECTION_MASK ((1<<W_DIRECTION_BIT)|(1<<X_DIRECTION_BIT)|(1<<Y_DIRECTION_BIT)|(1<<Z_DIRECTION_BIT)) // All direction bits
 #define STEPPING_MASK (STEP_MASK | DIRECTION_MASK) // All stepping-related bits (step/direction)
 
 // Initialize and start the stepper motor subsystem
