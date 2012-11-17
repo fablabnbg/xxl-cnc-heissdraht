@@ -34,7 +34,6 @@
 #include "limits.h"
 
 // Some useful constants
-#define STEPPING_MASK (STEP_MASK | DIRECTION_MASK) // All stepping-related bits (step/direction)
 
 #define TICKS_PER_MICROSECOND (F_CPU/1000000)
 #define CYCLES_PER_ACCELERATION_TICK ((TICKS_PER_MICROSECOND*1000000)/ACCELERATION_TICKS_PER_SECOND)
@@ -137,7 +136,7 @@ ISR(TIMER1_COMPA_vect)
   if (busy) { return; } // The busy-flag is used to avoid reentering this interrupt
   
   // Set the direction pins a couple of nanoseconds before we step the steppers
-  STEPPING_PORT = (STEPPING_PORT & ~DIRECTION_MASK) | (out_bits & DIRECTION_MASK);
+  DIRECTION_PORT = (DIRECTION_PORT & ~DIRECTION_MASK) | (out_bits & DIRECTION_MASK);
   // Then pulse the stepping pins
   STEPPING_PORT = (STEPPING_PORT & ~STEP_MASK) | out_bits;
   // Enable step pulse reset timer so that The Stepper Port Reset Interrupt can reset the signal after
@@ -274,8 +273,10 @@ ISR(TIMER2_OVF_vect)
 void st_init()
 {
   // Configure directions of interface pins
-  STEPPING_DDR |= STEPPING_MASK;
-  STEPPING_PORT = (STEPPING_PORT & ~STEPPING_MASK) | settings.invert_mask;
+  STEPPING_DDR |= STEP_MASK;
+  STEPPING_PORT = (STEPPING_PORT & ~STEP_MASK) | settings.invert_mask;
+  DIRECTION_DDR |= DIRECTION_MASK;
+  DIRECTION_PORT = (DIRECTION_PORT & ~DIRECTION_MASK) | settings.invert_mask;
   STEPPERS_DISABLE_DDR |= 1<<STEPPERS_DISABLE_BIT;
   
   // waveform generation = 0100 = CTC

@@ -39,10 +39,12 @@
 #define X_STEP_BIT           1
 #define Y_STEP_BIT           2
 #define Z_STEP_BIT           3
-#define W_DIRECTION_BIT      4
-#define X_DIRECTION_BIT      5
-#define Y_DIRECTION_BIT      6
-#define Z_DIRECTION_BIT      7
+#define DIRECTION_DDR       DDRC
+#define DIRECTION_PORT      PORTC
+#define W_DIRECTION_BIT      1
+#define X_DIRECTION_BIT      2
+#define Y_DIRECTION_BIT      3
+#define Z_DIRECTION_BIT      4
 
 #define LIMIT_DDR      DDRD
 #define LIMIT_PIN     PIND
