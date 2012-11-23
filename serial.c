@@ -43,7 +43,7 @@ uint8_t tx_buffer_head = 0;
 volatile uint8_t tx_buffer_tail = 0;
 
 static void set_baud_rate(long baud) {
-  uint16_t UBRR0_value = ((F_CPU / 16 + baud / 2) / baud - 1);
+  uint16_t UBRR0_value = ((F_CPU / 16 ) / baud - 1);
   UBRR0H = UBRR0_value >> 8;
   UBRR0L = UBRR0_value;
 }
@@ -82,7 +82,7 @@ void serial_write(uint8_t data) {
 }
 
 // Data Register Empty Interrupt handler
-ISR(USART_UDRE_vect) {  
+ISR(USART0_UDRE_vect) {  
   // Temporary tx_buffer_tail (to optimize for volatile)
   uint8_t tail = tx_buffer_tail;
 
@@ -111,7 +111,7 @@ uint8_t serial_read()
   }
 }
 
-ISR(USART_RX_vect)
+ISR(USART0_RX_vect)
 {
   uint8_t data = UDR0;
   uint8_t next_head = rx_buffer_head + 1;

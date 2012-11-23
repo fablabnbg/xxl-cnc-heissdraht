@@ -29,12 +29,13 @@ void limits_init() {
   LIMIT_DDR &= ~(LIMIT_MASK);
 }
 
-static void homing_cycle(bool x_axis, bool y_axis, bool z_axis, bool reverse_direction, uint32_t microseconds_per_pulse) {
+static void homing_cycle(bool w_axis, bool x_axis, bool y_axis, bool z_axis, bool reverse_direction, uint32_t microseconds_per_pulse) {
   // First home the Z axis
   uint32_t step_delay = microseconds_per_pulse - settings.pulse_microseconds;
   uint8_t out_bits = DIRECTION_MASK;
   uint8_t limit_bits;
   
+  if (w_axis) { out_bits |= (1<<W_STEP_BIT); }
   if (x_axis) { out_bits |= (1<<X_STEP_BIT); }
   if (y_axis) { out_bits |= (1<<Y_STEP_BIT); }
   if (z_axis) { out_bits |= (1<<Z_STEP_BIT); }
@@ -48,7 +49,7 @@ static void homing_cycle(bool x_axis, bool y_axis, bool z_axis, bool reverse_dir
   out_bits ^= settings.invert_mask;
   
   // Set direction pins
-  STEPPING_PORT = (STEPPING_PORT & ~DIRECTION_MASK) | (out_bits & DIRECTION_MASK);
+  DIRECTION_PORT = (DIRECTION_PORT & ~DIRECTION_MASK) | (out_bits & DIRECTION_MASK);
   
   for(;;) {
     limit_bits = LIMIT_PIN;
@@ -56,6 +57,10 @@ static void homing_cycle(bool x_axis, bool y_axis, bool z_axis, bool reverse_dir
       // Invert limit_bits if this is a reverse homing_cycle
       limit_bits ^= LIMIT_MASK;
     }
+    if (w_axis && !(LIMIT_PIN & (1<<W_LIMIT_BIT))) {
+      w_axis = false;
+      out_bits ^= (1<<W_STEP_BIT);      
+    }    
     if (x_axis && !(LIMIT_PIN & (1<<X_LIMIT_BIT))) {
       x_axis = false;
       out_bits ^= (1<<X_STEP_BIT);      
@@ -69,7 +74,7 @@ static void homing_cycle(bool x_axis, bool y_axis, bool z_axis, bool reverse_dir
       out_bits ^= (1<<Z_STEP_BIT);
     }
     // Check if we are done
-    if(!(x_axis || y_axis || z_axis)) { return; }
+    if(!(w_axis || x_axis || y_axis || z_axis)) { return; }
     STEPPING_PORT |= out_bits & STEP_MASK;
     delay_us(settings.pulse_microseconds);
     STEPPING_PORT ^= out_bits & STEP_MASK;
@@ -78,25 +83,26 @@ static void homing_cycle(bool x_axis, bool y_axis, bool z_axis, bool reverse_dir
   return;
 }
 
-static void approach_limit_switch(bool x, bool y, bool z) {
-  homing_cycle(x, y, z, false, 100000);
+static void approach_limit_switch(bool w, bool x, bool y, bool z) {
+  homing_cycle(w, x, y, z, false, 100000);
 }
 
-static void leave_limit_switch(bool x, bool y, bool z) {
-  homing_cycle(x, y, z, true, 500000);
+static void leave_limit_switch(bool w, bool x, bool y, bool z) {
+  homing_cycle(w, x, y, z, true, 500000);
 }
 
 void limits_go_home() {
   st_synchronize();
   // Store the current limit switch state
   uint8_t original_limit_state = LIMIT_PIN;
-  approach_limit_switch(false, false, true); // First home the z axis
-  approach_limit_switch(true, true, false);  // Then home the x and y axis
+  approach_limit_switch(false, true, false, true); // First home the z axis
+  approach_limit_switch(true,false, true, false);  // Then home the x and y axis
   // Xor previous and current limit switch state to determine which were high then but have become 
   // low now. These are the actual installed limit switches.
   uint8_t limit_switches_present = (original_limit_state ^ LIMIT_PIN) & LIMIT_MASK;
   // Now carefully leave the limit switches
   leave_limit_switch(
+    limit_switches_present & (1<<W_LIMIT_BIT), 
     limit_switches_present & (1<<X_LIMIT_BIT), 
     limit_switches_present & (1<<Y_LIMIT_BIT),
     limit_switches_present & (1<<Z_LIMIT_BIT));

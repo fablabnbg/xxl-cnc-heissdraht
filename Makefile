@@ -27,9 +27,9 @@
 #                is connected.
 # FUSES ........ Parameters for avrdude to flash the fuses appropriately.
 
-DEVICE     = atmega328p
-CLOCK      = 16000000
-PROGRAMMER = -c arduino -P /dev/ttyACM0 
+DEVICE     = atmega644
+CLOCK      = 20000000
+PROGRAMMER = -c usbtiny 
 OBJECTS    = main.o motion_control.o gcode.o spindle_control.o serial.o protocol.o stepper.o \
              eeprom.o settings.o planner.o nuts_bolts.o limits.o print.o
 # FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0x24:m
