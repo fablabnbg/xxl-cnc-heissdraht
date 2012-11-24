@@ -1,0 +1,127 @@
+					jw, Fri Aug 31 14:05:05 CEST 2012
+Total overview of IO capabilities
+---------------------------------
+
+2 towers, with 2 servos each. 
+1 rotary table servo.
+1 wire tension servo.
+1 heating controller.
+
+Cables
+------
+8pin ISDN Cable for connecting Servo units to Main controller
+	1: PWM a
+	2: PWM b
+	3: Limit a
+	4: Limit b
+	5: ENC 1
+	6: ENC 2
+	7: GND
+	8: +5V (not needed) or Motor Temperature
+
+4pin Phone: serial line
+	1: GND
+	2: TxD
+	3: RxD
+	4: +5V
+
+
+
+Main Controller: Servos + communications
+----------------------------------------
+Requirements:
+- RS232 Host
+- RS232 internal bus 
+  (Set tension, set temp, query length, query temp)
+- 5x 2 PWM pins motor driver
+- 5x 1 Rotory encoder 
+- 4x 2 Left / Right hardware limits
+- 1x turntable hardware index 
+- 1x emergency off.
+- 2x Status LED green + red
+- 4 Joystick
+- 2 device select: 00: turntable, 01: left tower, 10: right tower, 11: both towers
+- 1 contact for manual setup mode (test movements)
+
+Assignment Atmega128
+ - PE0+1 RS232 Host
+ - PD2+3 RS232 internal
+ - PG0+1, PC0..7 PWM motor driver 
+ - PE4,5,6,7,PD1 Rotory ENC
+ - PD0 emergency off and wired and from all limit switches
+ --> ERROR: ATmega128 does not have its GPIO equiped with
+     interrupt sources. 
+     Wired OR means, we must switch to pollling, 
+     as long as one of the lines is pulled low. This is bad!
+ - PF0..7 Limit switches (Wired OR into PD0.)
+ - PG2 turntable hardware index (Wired OR into PD0.)
+ - PB1,2,3,RESET,GND/VCC 	ISP
+ - PE2+3 Status LED
+ - PB0: manual mode
+ - PB4,5,6,7 Joystick
+ - PG3,4 manual device select
+
+Assignment Atmega164
+ - PD0+1 RS232 Host
+ - PD2,3 RS232 internal
+ - PB0+1, PA0..8 PWM motor driver
+ - PC3,4,5,6,7 Rotory ENC.
+ - PC2 emergency off
+ - PD4,5,6,7, PB4,5,6,7 Limit switches
+ - PB3 turntable hardware index
+ - PB2 Status LED
+ - PC0+1 I2C joystick, LCD, etc...
+
+
+Aux Controller: wire-tension servo 
+----------------------------------
+Requirements:
+- 2 PWM pins for motor driver.
+- 2 AD converter inputs (1 for servo pot. 1 for set tension value)
+- 2 contact inputs for hardware limits.
+- 1 contact (NC) for emergency off.
+- 2x Status LED green + red
+- 1 contact for manual setup mode (minimum tension)
+- 1x I2C output/input for 
+     report current length, set tension value.
+- 1x RS232 output/input 
+     report current length, set tension value.
+
+Assignment ATmega48
+ - PB0/PB1 PWM motor driver
+ - PC0/PC1 AD converter
+ - PC4+5 I2C
+ - PD0+1 RS232
+ - PD2+3 hardware limits
+ - PD4	emergency off
+ - PD5  setup mode
+ - PD6/7  status LED
+ - PC6/PB3,4,5/GND/VCC 	ISP
+
+
+Aux Controller: heating 
+-----------------------
+(22V 3.5A with 120cm -> ca 60W/m)
+Requirements:
+- 1 PWM output pin. Velleman K8064 Dimmer 750W
+- 2 AD converter inputs (thermometer + set temperature value)
+- 1 contact (NC) for emergency off.
+- LED Display 1 8 5
+- 2x Status LED green + red
+- 1 contact for manual setup mode (force cold)
+- 1x I2C output/input for 
+     report temperature, set temperature
+- 1x RS232 output/input 
+     report temperature, set temperature
+
+Assignment ATmega48
+ - PB1 PWM out
+ - PC0/PC1 AD converter
+ - PC4+5 I2C
+ - PD0+1 RS232
+ - PD4	emergency off
+ - PD5  setup mode
+ - PD6/7  status LED
+ - PC6/PB3,4,5/GND/VCC 	ISP
+ --> remaining for LED: PB0,2,7,6, PC3,4, PD2,3
+

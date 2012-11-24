@@ -1,0 +1,92 @@
+					jw, Wed Aug 22 09:23:41 CEST 2012
+Protocol proposal
+-----------------
+
+USB Serial device 115200 bps. 
+All commands and responses are plain ascii text lines, 
+terminated with \n, \r, or both.
+
+The controller support multiple axis, numbered 0,1,2,3,4,...
+Absolute position, speed and direction can be set and queried.
+
+With a given speed and position, the controller will run up to the
+asked position, with the given speed up to the very last moments, when 
+a brake slope is required to reach the position.
+A countdown, l05, l04, l03, l04, l02, l01, l00 is sent out, to 
+alarm the user, that (unless a new vector is given) the axis will slow down 
+and stop at the last position, sending q00 when done.
+
+Position and speed vectors are queued, up to 10 entries.
+vectors can be given as either
+speed + duration, position + speed, or position + duration.
+
+Upon startup, all axis restore their last position from eeprom, 
+  Speed is set to default speed, ca 1/3rd of maximum speed.
+  All axis enter hold mode, assuming their set position is identical 
+  to the last position. 
+
+
+Idle mode. The axis is powered down. 
+	Give an explicit idle command to enter this mode, 
+	give an eplicit run or hold command to re-activate.
+Hold mode. The axis is active (powered and controlled), its set position equals 
+	its last position. This mode is entered by an explicit hold comand,
+	or by explicitly setting the position identical to the last reached position,
+	or after a movement command completes without a next command being queued.
+	The controller drives the axis to counteract unexpected movement if any.
+Run mode. The axis is moving.
+	From hold mode, run mode is entered by specifying a position different from the 
+	last position. From Idle mode, an explicit run command is needed, then the either hold or run 
+	mode is entered depending on wether the set position differs or not.
+Speed or durations commands store their values internally to be used with the next position command.
+
+
+
+
+Command syntax: 
+  1 command letter, (optionally) followed by an axis number,
+  (if needed) followed by a delimiter :,= (or whitespace)
+    and a (posisbly negative) parameter value.
+  
+  multiple commands can be written in one line, seperated by ; 
+  a line is terminated by \n, \r, or both.
+  whitespace can be used within or around commands to make them more readable.
+
+In the following table, the upper case N represents the axis number. If N is omitted, all axis are addressed.
+XXX represents positive or negative decimal numbers.
+
+iN
+	Switch to idle mode. The controller returns iN messages after stopping and reaching idle mode. 
+rN
+	Switch to run or hold mode. (Default).
+
+hN
+	Force into hold mode. This cancels all queued commands.
+	The current position is read and immediatly copied to the set position.
+	The controller shuts down the motor (and if possible brakes), and waits until the axis stops moving.
+	Usually the controller needs to reverse the axis and go back to the set position.
+
+dN,XXX
+	Calculate a new speed fo the axis, so that the new set position is reached in XXX *0.1 seconds.
+	Ths invalidates previous v comands.  The timer starts on the next p command.
+	
+vN,XXX 
+	Set the speed for then next p command. This invalidates previous d commands.
+
+pN,XXX
+	If in hold mode, enter run mode if XXX differs from the current last position.
+	The controller responds with qN0, saying that no command is being queued, (it is immediatly run.)
+	If already in run mode, the command is queued, responding with qN1, qN2, ...
+
+When a position command is done, and the next queued command activates, the
+controller adapts to the new speed (near the reached positon) without
+necessarily stopping. A qNX is printed, where X is one less than what was seen
+when queuing the last command.  If the next command is in the opposite
+direction, the controller shuts down the motor (and if possible brakes), and
+waits until the axis stops moving. Then the axis accellerates in the opposite
+direction for the desired speed.
+
+When a position command is almost done, and no next commands are queued, the
+axis announces, it will enter hold mode when done. 0.5 seconds before the
+command ends, lN5 is sent, then 0.sec intervals lN4, lN3, lN2, lN1, and when
+finally entering hold mode, lN0.
