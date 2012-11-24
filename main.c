@@ -49,13 +49,6 @@ int main(void)
 
                     
   while (1) {
-	  int led=0;
-//     sleep_mode(); // Wait for it ...
-//
-  //DDRB|=1;
-  //led=!led;
-     //PORTB&=~1;
-     //PORTB|=led;
     protocol_process(); // ... process the serial protocol
   }
   return 0;   /* never reached */
