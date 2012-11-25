@@ -1,0 +1,131 @@
+				jw, Fr Nov 12 01:42:16 CET 2004
+
+
+Pin-out of the Atmel ATmega128 Board from embedit.de
+----------------------------------------------------
+
+SV1 = SV20
+----------
+
+ 1 GND
+ 2 VCC
+ 3 RESET
+ 4 PG0 (WR)
+ 5 PG1 (RD)
+ 6 PG2 (ALE)
+ 7 PG3 (TOSC2)
+ 8 PG4 (TOSC1)
+ 9 PD0 (SCL / INT0)
+10 PD1 (SDA / INT1)
+11 PD2 (RXD1 / INT2)
+12 PD3 (TXD1 / INT3)
+13 PD4 (IC1)
+14 PD5 (XCK1)
+15 PD6 (T1)
+16 PD7 (T2)
+
+SV2 = SV16
+----------
+ 1 PE0 (RXD0 / PDI)
+ 2 PE1 (TXD0 / PDO)
+ 3 PE2 (XCK0 / AIN0)
+ 4 PE3 (OC3A / AIN1)
+ 5 PE4 (OC3B / INT4)
+ 6 PE5 (OC3C / INT5)
+ 7 PE6 (T3 / INT6)
+ 8 PE7 (IC3 / INT7)
+ 9 PB0 (SS)
+10 PB1 (SCK)
+11 PB2 (MOSI)
+12 PB3 (MISO)
+13 PB4 (OC0)
+14 PB5 (OC1A)
+15 PB6 (OC1B)
+16 PB7 (OC2 / OC1C)
+
+SV3 = SV17
+----------
+ 1 GND
+ 2 VCC (+5V)
+ 3 -
+ 4 VDD (+8-12V)
+ 5 PF7 (ADC7 / TDI)
+ 6 PF6 (ADC6 / TDO)
+ 7 PF5 (ADC5 / TMS)
+ 8 PF4 (ADC4 / TCK)
+ 9 PF3 (ADC3)
+10 PF2 (ADC2)
+11 PF1 (ADC1)
+12 PF0 (ADC0)
+13 AREF
+14 AGND
+15 AVCC
+16 PEN
+
+SV4 = SV18
+----------
+ 1 PC0 (A8)
+ 2 PC1 (A9)
+ 3 PC2 (A10)
+ 4 PC3 (A11)
+ 5 PC4 (A12)
+ 6 PC5 (A13)
+ 7 PC6 (A14)
+ 8 PC7 (A15)
+ 9 PA0 (AD0)
+10 PA1 (AD1)
+11 PA2 (AD2)
+12 PA3 (AD3)
+13 PA4 (AD4)
+14 PA5 (AD5)
+15 PA6 (AD6)
+16 PA7 (AD7)
+
+STK200
+------
+ 1 MOSI
+ 2 VCC
+ 3 -
+ 4 GND
+ 5 RESET
+ 6 GND
+ 7 SCK
+ 8 GND
+ 9 MISO
+10 GND
+
+
+Top View:
++------------------------------------------------------+
+|                   +STK200-------+                    | 
+|                   |2  4  6  8 10|                    |
+|                   |1  3  5  7  9|                    |
+|                   +-------------+                    |
+|  (LED)     15--13--11---9---7---5---3---1   (78L05)  |
+|            16--14--12--10---8---6---4---2            |
+|                                  SV3=SV17            |
+|                                                      |
+|  1--2 SV2=                                     16-15 |
+|  |  | SV16                                      |  | |
+|  3  4             ................             14 13 |
+|  |  |            :o               :             |  | |
+|  5  6            :                :            12 11 |
+|  |  |            :        Atmel   :             |  | |
+|  7  8            :    ATMEGA128   :            10  9 |
+|  |  |            :    16AI 0412   :             |  | |
+|  9 10            :                :             8  7 |
+|  |  |            :                :             |  | |
+| 11 12            :                :             6  5 |
+|  |  |             ................              |  | |
+| 13 14                                           4  3 |
+|  |  |                                     SV4=  |  | |
+| 15-16                (16.000H3K)          SV18  2--1 |
+|                                                      |
+|            SV1=SV20                                  |
+|             2---4---6---8--10--12--14--16            |
+|             1---3---5---7---9--11--13--15            |
++------------------------------------------------------+
+
+Embedit Mikrokontrollertechnik		Tel: 0931 / 4678655
+Seeweg 13				http://www.embedit.de
+D97207 Veitshöchheim                    info@embedit.de

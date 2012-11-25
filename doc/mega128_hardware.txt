@@ -1,0 +1,45 @@
+                                    Tue Jan  4 14:57:25 CET 2005, jw
+
+ATMEGA 128 test board assembly
+------------------------------
+
+See embedit.txt for connector layout.
+See doc2467_atmega128_datasheet.pdf for port pin definitions.
+
+lcd128.c 
+--------
+	Drives 8 LEDs through Port PA0 .. PA7. (SV18 9-16)
+	Drives LCD display though Port PG0 and PG1. (SV20 4,5)
+
+rc128.c
+-------
+	Drives 8 PWM servos through Port PC0 .. PC7 (SV18 1-8)
+	Samples 8 PWM inputs through Port PD0..PD3, PE4..PE7 (SV20 9-12, SV16 5-8)
+
+logic.c
+-------
+	Uses PWM inputs 6,7 for gyros at io_gyro_init.
+
+rs232.c
+-------
+	PE1 (SV16 2) is used as TxD for serial transmission via USART0. 
+
+kbd128.c
+--------
+	PE0,PE2 (SV16 1,3) are used for synchronous PS2 reception.
+
+programming
+-----------
+	PE1 and PE2 are used for data in SPI programming.
+
+jstick.c
+--------
+	PD4..PD7 (SV20, 13..16) LEFT RIGHT UP DOWN.
+	PG3 (SV20, 7) FIRE.
+
+unused
+------
+	PF0..PF7 Analog to digital coverter inputs.
+	PD4=ICP1 Input capture pin of unit 1.
+
+
