@@ -1,0 +1,10 @@
+mkdir ~/src/svn-co/repoA
+cd ~/src/svn-co/repoA
+tar xvf ~/xxl_heissdraht_20121124_patrick_firmware.tar.gz
+cd ..
+git clone https://github.com/jnweiger/xxl-cnc-heissdraht.git
+cd xxl-cnc-heissdraht/
+git remote add -f grbl4-patrick ~/src/svn-co/repoA/grbl4
+git merge -s ours --no-commit grbl4-patrick/master
+git read-tree --prefix=src/grbl4-patrick/ -u grbl4-patrick/master
+git ci -m "merging grbl4-patrick into subdirectory"
