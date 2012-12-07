@@ -31,6 +31,9 @@
 // Initialize and start the stepper motor subsystem
 void st_init();
 
+// called from gcode.c to allow the stepper motors to power down when idle.
+void st_allow_stepper_disable(int new);
+
 // Block until all buffered steps are executed
 void st_synchronize();
 

@@ -31,6 +31,7 @@
 #include "spindle_control.h"
 #include "errno.h"
 #include "protocol.h"
+#include "stepper.h"
 
 #define MM_PER_INCH (25.4)
 
@@ -158,6 +159,8 @@ uint8_t gc_execute_line(char *line) {
         case 3: gc.spindle_direction = 1; break;
         case 4: gc.spindle_direction = -1; break;
         case 5: gc.spindle_direction = 0; break;
+	case 100: st_allow_stepper_disable(0); break;
+	case 101: st_allow_stepper_disable(1); break;
         default: FAIL(STATUS_UNSUPPORTED_STATEMENT);
       }            
       break;

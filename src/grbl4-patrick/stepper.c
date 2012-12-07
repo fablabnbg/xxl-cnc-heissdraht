@@ -49,6 +49,8 @@ static int32_t counter_w,       // Counter variables for the bresenham line trac
 static uint32_t step_events_completed; // The number of step events executed in the current block
 static volatile uint8_t busy; // true when SIG_OUTPUT_COMPARE1A is being serviced. Used to avoid retriggering that handler.
 
+static uint8_t allow_stepper_disable;
+
 // Variables used by the trapezoid generation
 static uint32_t cycles_per_step_event;        // The number of machine cycles between each step event
 static uint32_t trapezoid_tick_cycle_counter; // The cycles since last trapezoid_tick. Used to generate ticks at a steady
@@ -88,7 +90,7 @@ static void st_wake_up()
 }
 
 // Stepper shutdown
-static void st_go_idle() 
+static void st_go_idle()
 {
   // Cycle finished. Set flag to false.
   cycle_start = false; 
@@ -100,7 +102,8 @@ static void st_go_idle()
     _delay_ms(STEPPER_IDLE_LOCK_TIME);   
   #endif
   // Disable steppers by setting stepper disable
-  STEPPERS_DISABLE_PORT |= (1<<STEPPERS_DISABLE_BIT);
+  if (allow_stepper_disable)
+    STEPPERS_DISABLE_PORT |= (1<<STEPPERS_DISABLE_BIT);
 }
 
 // Initializes the trapezoid generator from the current block. Called whenever a new 
@@ -267,6 +270,11 @@ ISR(TIMER2_OVF_vect)
   // Reset stepping pins (leave the direction pins)
   STEPPING_PORT = (STEPPING_PORT & ~STEP_MASK) | (settings.invert_mask & STEP_MASK); 
   TCCR2B = 0; // Disable Timer2 to prevent re-entering this interrupt when it's not needed. 
+}
+
+void st_allow_stepper_disable(int new)
+{
+  allow_stepper_disable = new;
 }
 
 // Initialize and start the stepper motor subsystem
