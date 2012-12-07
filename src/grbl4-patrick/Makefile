@@ -73,10 +73,19 @@ load: all
 
 clean:
 	rm -f grbl.hex main.elf $(OBJECTS)
+	
+VERS_TEST=$(shell $(COMPILE) --version | grep '4\.3\.3')
+ifeq ($(VERS_TEST),)
+GC_SECTIONS=-Wl,--gc-sections
+else
+# 4.3.3 does not like --gc-sections.
+GC_SECTIONS=
+endif
 
 # file targets:
 main.elf: $(OBJECTS)
-	$(COMPILE) -o main.elf $(OBJECTS) -lm -Wl,--gc-sections
+	$(COMPILE) -o main.elf $(OBJECTS) -lm $(GC_SECTIONS)
+	@echo "$(VERS_TEST)"
 
 grbl.hex: main.elf
 	rm -f grbl.hex
