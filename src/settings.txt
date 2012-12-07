@@ -1,0 +1,17 @@
+ok
+$
+ok
+$0 = 75.591 (steps/mm w)
+$1 = 75.591 (steps/mm x)
+$2 = 75.591 (steps/mm y)
+$10 = 75.591 (steps/mm z)
+$3 = 30 (microseconds step pulse)
+$4 = 500.000 (mm/min default feed rate)
+$5 = 500.000 (mm/min default seek rate)
+$6 = 0.100 (mm/arc segment)
+$7 = 170 (step port invert mask. binary = 10101010)
+$8 = 50.000 (acceleration in mm/sec^2)
+$9 = 0.050 (cornering junction deviation in mm)
+'$x=value' to set parameter or just '$' to dump current settings
+ok
+
