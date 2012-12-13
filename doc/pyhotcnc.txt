@@ -1,0 +1,10 @@
+From: ghg clone https://bitbucket.org/pathim/pyhotcnc
+Requires: python-pyparsing
+Requires: python-matplotlib
+Requires: python-matplotlib-tk
+
+python tests/runtests.py
+ok
+python main.py
+ok
+
