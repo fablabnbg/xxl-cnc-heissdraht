@@ -40,7 +40,7 @@ FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0xe7:m
 # Tune the lines below only if you know what you are doing:
 
 AVRDUDE = avrdude $(PROGRAMMER) -p $(DEVICE) -b 115200 -B 10  
-COMPILE = avr-gcc -Wall -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE) -I. -ffunction-sections
+COMPILE = avr-gcc-4.7.0 -Wall -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE) -I. -ffunction-sections
 
 # symbolic targets:
 all:	grbl.hex
