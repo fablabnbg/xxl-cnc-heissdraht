@@ -18,15 +18,25 @@ class drvFabGrbl(object):
 			self.s = serial.Serial(self.device,9600)
 		else:
 			self.s = self.device
-		self.s.write("\r\n\r\n")
+		self.s.write("\n\n")
 		# Wait for grbl to initialize and flush startup text in serial input
+		time.sleep(2)
+		self.s.flushInput()
+		# check if there really is a grbl
+		self.s.write("\n")
+		res=self.s.readline().strip()
+		if res!='ok':
+			raise EnvironmentError('grbl is not responding')
+		# set steps/mm to reasonable values
+		self.s.write("$0=75\n")
+		self.s.write("$1=75\n")
+		self.s.write("$2=75\n")
+		self.s.write("$10=75\n")
 		time.sleep(2)
 		self.s.flushInput()
 		while self.running:
 			cmd=self.queue.get()
 			self.s.write(cmd)
-			print "DEBUG drvgrbl: %s"%cmd
-			time.sleep(2)
 			res=self.s.readline().strip()
 			if res!='ok':
 				self.error='Error: "%s" at Command "%s"'%(res,cmd)
@@ -42,7 +52,7 @@ class drvFabGrbl(object):
 	def write(self,cmd):
 		if not self.error is None:
 			raise EnvironmentError(self.error)
-		cmd=cmd.strip()+'\r\n'
+		cmd=cmd.strip()+'\n'
 		self.queue.put(cmd)
 
 	def flush(self):

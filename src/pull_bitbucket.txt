@@ -1,4 +1,4 @@
 hg clone https://bitbucket.org/pathim/pyhotcnc
 git add pyhotcnc
-git del -r -f pyhotcnc/.hg*
+echo .hg >> ../.git/info/exclude
 git commit -a
