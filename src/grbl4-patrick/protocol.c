@@ -28,6 +28,7 @@
 #include "config.h"
 #include <math.h>
 #include "nuts_bolts.h"
+#include "planner.h"
 #include <avr/pgmspace.h>
 #define LINE_BUFFER_SIZE 50
 
@@ -38,7 +39,17 @@ static uint8_t iscomment; // Comment/block delete flag for processor to ignore c
 static void status_message(int status_code) 
 {
   if (status_code == 0) {
-    printPgmString(PSTR("ok\r\n"));
+    int32_t* pos=get_current_position();
+    printPgmString(PSTR("ok"));
+    printPgmString(PSTR("W:"));
+    printInteger(pos[0]);
+    printPgmString(PSTR("X:"));
+    printInteger(pos[1]);
+    printPgmString(PSTR("Y:"));
+    printInteger(pos[2]);
+    printPgmString(PSTR("Z:"));
+    printInteger(pos[3]);
+    printPgmString(PSTR("\r\n"));
   } else {
     printPgmString(PSTR("error: "));
     switch(status_code) {          

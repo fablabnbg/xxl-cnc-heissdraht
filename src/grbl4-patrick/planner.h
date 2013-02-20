@@ -69,4 +69,6 @@ block_t *plan_get_current_block();
 // Reset the position vector
 void plan_set_current_position(double w, double x, double y, double z); 
 
+int32_t* get_current_position();
+
 #endif

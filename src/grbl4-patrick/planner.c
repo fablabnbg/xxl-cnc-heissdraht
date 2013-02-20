@@ -468,3 +468,8 @@ void plan_set_current_position(double w,double x, double y, double z) {
   previous_nominal_speed = 0.0; // Resets planner junction speeds. Assumes start from rest.
   clear_vector_double(previous_unit_vec);
 }
+
+
+int32_t* get_current_position(void){
+  return position;
+}

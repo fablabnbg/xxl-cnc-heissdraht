@@ -1,2 +1,4 @@
 http://reprap.org/wiki/Mendel_User_Manual:_RepRapGCodes
+G91
+G0 X100 Y100 Z100 W100
 
