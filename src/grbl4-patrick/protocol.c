@@ -41,13 +41,13 @@ static void status_message(int status_code)
   if (status_code == 0) {
     int32_t* pos=get_current_position();
     printPgmString(PSTR("ok"));
-    printPgmString(PSTR("W:"));
+    printPgmString(PSTR(" W:"));
     printInteger(pos[0]);
-    printPgmString(PSTR("X:"));
+    printPgmString(PSTR(" X:"));
     printInteger(pos[1]);
-    printPgmString(PSTR("Y:"));
+    printPgmString(PSTR(" Y:"));
     printInteger(pos[2]);
-    printPgmString(PSTR("Z:"));
+    printPgmString(PSTR(" Z:"));
     printInteger(pos[3]);
     printPgmString(PSTR("\r\n"));
   } else {
