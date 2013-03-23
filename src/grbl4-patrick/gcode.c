@@ -32,6 +32,7 @@
 #include "errno.h"
 #include "protocol.h"
 #include "stepper.h"
+#include "pwm.h"
 
 #define MM_PER_INCH (25.4)
 
@@ -120,6 +121,9 @@ uint8_t gc_execute_line(char *line) {
   double p = 0, r = 0;
   int int_value;
 
+  int PWM_set_A=false;
+  int PWM_set_B=false;
+
   gc.status_code = STATUS_OK;
   
   // Pass 1: Commands
@@ -161,6 +165,8 @@ uint8_t gc_execute_line(char *line) {
         case 5: gc.spindle_direction = 0; break;
 	case 100: st_allow_stepper_disable(0); break;
 	case 101: st_allow_stepper_disable(1); break;
+	case 102: PWM_set_A=true; break;
+	case 103: PWM_set_B=true; break;
         default: FAIL(STATUS_UNSUPPORTED_STATEMENT);
       }            
       break;
@@ -213,6 +219,14 @@ uint8_t gc_execute_line(char *line) {
     
   // Update spindle state
   spindle_run(gc.spindle_direction, gc.spindle_speed);
+
+  // Update PWM
+  if (PWM_set_A){
+	  pwm_set_a(p);
+  }
+  if (PWM_set_B){
+	  pwm_set_b(p);
+  }
   
   // Perform any physical actions
   switch (next_action) {
