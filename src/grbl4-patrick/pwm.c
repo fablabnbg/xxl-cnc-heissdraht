@@ -18,4 +18,3 @@ void pwm_set_a(int val){
 
 void pwm_set_b(int val){
 	OCR0B=val;
-}
