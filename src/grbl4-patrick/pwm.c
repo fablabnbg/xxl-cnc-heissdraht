@@ -8,8 +8,8 @@ void pwm_init(){
 	OC0A_DDR|=1<<OC0B_BIT;
 	TCCR0A=0xA3;// clear OC0A on compare; Fast PWM 3
 	TCCR0B=0x05;// prescale 1/1024
-	OCR0A=127;
-	OCR0B=127;
+	OCR0A=0;
+	OCR0B=0;
 }
 
 void pwm_set_a(int val){
