@@ -22,9 +22,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.70710678"
-     inkscape:cx="621.30403"
-     inkscape:cy="554.75262"
+     inkscape:zoom="0.5"
+     inkscape:cx="535.50537"
+     inkscape:cy="625.42391"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -34,18 +34,45 @@
      inkscape:window-x="77"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
-     inkscape:snap-global="false">
+     inkscape:snap-global="false"
+     showguides="true"
+     inkscape:guide-bbox="true">
     <inkscape:grid
        dotted="false"
        spacingy="1mm"
        spacingx="1mm"
        units="mm"
        snapvisiblegridlinesonly="false"
-       enabled="true"
-       visible="true"
+       enabled="false"
+       visible="false"
        empspacing="5"
        id="grid2991"
        type="xygrid" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="531.4961,531.46875"
+       id="guide4116" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="531.47657,531.4961"
+       id="guide4118" />
+    <sodipodi:guide
+       orientation="-0.50022472,-0.86589562"
+       position="531.39075,531.47914"
+       id="guide4122" />
+    <inkscape:grid
+       type="axonomgrid"
+       id="grid4124"
+       units="mm"
+       empspacing="5"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true"
+       originx="150mm" />
+    <sodipodi:guide
+       orientation="0.5004725,-0.86575243"
+       position="700,629"
+       id="guide4128" />
   </sodipodi:namedview>
   <defs
      id="defs4" />
@@ -195,5 +222,53 @@
          style="fill:none;stroke:#000000;stroke-width:0.86624461;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
          sodipodi:type="arc" />
     </g>
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:0.35433072;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect4114"
+       width="29.966415"
+       height="99.060905"
+       x="235.32811"
+       y="142.54793"
+       transform="matrix(0.8660254,0.5,-0.5,0.8660254,0,0)" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:0.35433072;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect4114-8"
+       width="29.966415"
+       height="99.060905"
+       x="1172.5393"
+       y="161.31897"
+       transform="matrix(0.8660254,0.5,-0.5,0.8660254,0,0)" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:0.35433072;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect4114-8-8"
+       width="29.966415"
+       height="99.060905"
+       x="654.72968"
+       y="680.4928"
+       transform="matrix(0.8660254,-0.5,0.5,0.8660254,0,0)" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:0.35433072;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect4114-8-8-1"
+       width="29.966415"
+       height="99.060905"
+       x="-275.92081"
+       y="682.42664"
+       transform="matrix(0.8660254,-0.5,0.5,0.8660254,0,0)" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:0.35433072;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect4114-8-8-1-9"
+       width="29.966415"
+       height="99.060905"
+       x="-1004.3455"
+       y="484.46954"
+       transform="matrix(0,-1,1,0,0,0)" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:0.35433072;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect4114-8-8-1-9-0"
+       width="29.966415"
+       height="99.060905"
+       x="-63.34552"
+       y="480.46954"
+       transform="matrix(0,-1,1,0,0,0)" />
   </g>
 </svg>
