@@ -10,23 +10,10 @@
 #include <util/delay.h>			// needs F_CPU from cpu_mhz.h
 #include <avr/io.h>
 
-#ifndef LED_PORT
-# ifdef PORTA
-#  define LED_PORT PORTA
-#  define LED_DDR  DDRA
-# else
-#  ifdef PORTB
-#   define LED_PORT PORTB
-#   define LED_DDR  DDRB
-#  else
-#   error "This CPU has no PORTA or PORTB, try somethig different"
-#  endif
-# endif
-#endif
+#define LED_PORT PORTD
+#define LED_DDR  DDRD
 
-#ifndef LED_BITS
-# define LED_BITS	0xff		// try all ...
-#endif
+#define LED_BITS	0xff		// try all ...
 
 int main()
 {

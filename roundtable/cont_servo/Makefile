@@ -30,7 +30,7 @@ PROG_SW       = avrdude
 ## try this, if $(ISP) magic fails
 #UPLOAD_CMD    = $(PROG_SW) -p AT$(CPU) -c $(PROG_HW) $(AVRDUDE_OPT) $(addprefix -P,$(PROG_PORT)) -U $(NAME).hex -v
 
-CFLAGS        += -Os -g -Wall -DLED_PORT=PORTB -DLED_DDR=DDRB -DLED_BITS=0xaf
+CFLAGS        += -Os -g -Wall
 #CFLAGS        += -Os -g -Wall
 #LDFLAGS       += -Wl,-u,vfprintf -lprintf_min
 
