@@ -19,7 +19,8 @@ Attiny2313 board:
  * 6pin rs232/bluetooth connector female
  * 2pin power in connector 5V male
  * 3pin servo connector male
- * 4pin hall sensor + motor monitor connector male.
+ * 1pin motor monitor connector male.
+ * 3pin hall sensor  male
  * Red calibration indicator LED.
  * Green speed indicator LED.
  * three push bottons labeled 'left', 'stop', 'right'.
