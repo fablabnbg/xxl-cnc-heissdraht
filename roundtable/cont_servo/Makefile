@@ -1,11 +1,11 @@
 # Makefile for project $(NAME)
 # Distribute under GPLv2, use with care.
 #
-# 2008-09-25, jw@suse.de
 # 2012-11-24, jw@suse.de
+# 2013-04-09, jw@suse.de
 
 NAME          = cont_servo
-CFILES        = blink.c # $(NAME).c eeprom.c i2c_slave_cb.c
+CFILES        = servo.c rs232.c
 
 CPU           = tiny2313
 #CPU           = mega48

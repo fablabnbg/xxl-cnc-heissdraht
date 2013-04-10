@@ -216,7 +216,7 @@ else
 ## use egrep to make dude half quiet.
 ifeq ($(UPLOAD_CMD),)
 up upload:: $(NAME).hex flashcount
-	$(ISP) up $(NAME).hex 2>&1 | egrep -i '(device|bytes|failed|check)'
+	$(ISP) up $(NAME).hex 2>&1 | egrep -i '(error|device|bytes|failed|check)'
 	@# test "`wc -c < $(NAME)-ee.hex`" -gt 13 && $(ISP) up_ee $(NAME)-ee.hex
 else
 up upload:: $(NAME).hex flashcount
@@ -316,7 +316,7 @@ VERSION_MAJ	= $(shell read a b < version; echo $$a)
 VERSION_MIN	= $(shell read a b < version; echo $$b)
 OLD_VERSION	:= VERSION
 
-version:: incr_vmin rename
+version:: incr_vmin # rename
 
 version.h::
 	@echo \#define VERSION   \"$(VERSION)\"    > version.h; \
