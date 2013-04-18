@@ -1,6 +1,7 @@
-Computer-Controlled Styrofoam Cutter
-------------------------------------
+Fablab Nuremberg: Computer-Controlled Styrofoam Cutter
+------------------------------------------------------
 
+[photos/machine_in_action.jpg]
 
 The hot-wire foam cutter is a tool used to cut polystyrene foam and similar
 materials. The device consists of a metal wire, which is heated via to a dark
@@ -12,5 +13,25 @@ and can be lengthend or shortened as needed. Airplane wings anybody?
 Architecture, and landscape models also come to mind.
 
 Built using motors and guides from a a 3D-Printer, this machine is a four
-degree of freedom CNC system.
+degree of freedom CNC system, and can process Models designed with Blender.
+
+
+
+Fablab Nürnberg: CNC-Heissdrahtschneider
+----------------------------------------
+
+[photos/machine_in_action.jpg]
+
+Die Hartschaum Schneidemaschine kann Styropor oder ähnliches Material schneiden.
+Ein dünner Metalldraht wird elektrisch geheizt bis annähernd Rotglut geheizt.
+Dieser Draht bewegt sich durch das Material und schmilzt oder verdampft das Material.
+
+Die Schnittlänge ist nur durch die Länge des Drahtes begrenzt. Unsere 
+Maschine ist modular aufgebaut und kann nach Bedarf verlängert oder gekürzt werden.
+Schaumkerne für Modellflugzeuge können sehr leicht hergestellt werden.
+Das Verfahren eignet sich auch für Architektur oder Landschaftsmodelle.
+
+Die Maschine wurde mit Hilfe von Motoren und Führungen eins handelsüblichen 
+3D-Druckers gebaut, und ist nun ein 4-Achs-CNC-System, das Modelle aus 
+Blender übernimmt.
 
