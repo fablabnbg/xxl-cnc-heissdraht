@@ -1,0 +1,16 @@
+Computer-Controlled Styrofoam Cutter
+------------------------------------
+
+
+The hot-wire foam cutter is a tool used to cut polystyrene foam and similar
+materials. The device consists of a metal wire, which is heated via to a dark
+red glow. As the wire is passed through the material, the heat from the wire
+vaporises the material.
+
+The depth of the cut is limited only by the wire length. Our machine is modular
+and can be lengthend or shortened as needed. Airplane wings anybody?
+Architecture, and landscape models also come to mind.
+
+Built using motors and guides from a a 3D-Printer, this machine is a four
+degree of freedom CNC system.
+
