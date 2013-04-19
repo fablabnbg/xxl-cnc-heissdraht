@@ -39,6 +39,8 @@
 #define T1TOP  22370		// 8000000/8*0.020
 #define PW_MIN   500		// 0.5 msec
 #define PW_MAX  2400		// 2.4 msec
+#define PW_BUT_INCR     20
+#define PW_TUNED_STOP	-12
 
 #define BUTTON_STEP_DIVISOR	500			// 200: 5 promille each 20msec
 #define BUTTON_STEP (((uint16_t)PW_MAX-PW_MIN)/BUTTON_STEP_DIVISOR)
@@ -112,23 +114,73 @@ int main()
   PORTD	= (1<<PD2)|(1<<PD3);		// pullups for sensors
   PORTB	= (1<<PB0)|(1<<PB1)|(1<<PB2);	// pullups for switches
   timer_init();
-  OCR1B	= pulse_width = (PW_MIN+PW_MAX)/2;	// start with medium pwm
+  uint16_t pwm_stop_val = (PW_MIN+PW_MAX)/2+PW_TUNED_STOP;
+  OCR1B	= pulse_width = pwm_stop_val;	// start stopped.
 
 #define BAUD      19200
   rs232_init(UBRV(BAUD), &rs232_recv);
 
   uint16_t counter = 0;
+  uint8_t paused = 0;
+  uint8_t button_seen = 0;
 
   for (;;)
     {
-      if (!(counter++ % (1<<(led_what-1))))
+      if (!button_seen)
+	{
+	  if (PINB & (1<<PB0))
+	    {
+	      button_seen = 1;
+	      if (paused) pulse_width = pwm_stop_val;
+	      pulse_width += PW_BUT_INCR;
+	      if (pulse_width > PW_MAX) pulse_width = PW_MAX;
+	      paused = 0;
+	    }
+	  if (PINB & (1<<PB2))
+	    { 
+	      button_seen = 1;
+	      if (paused) pulse_width = pwm_stop_val;
+	      pulse_width -= PW_BUT_INCR;
+	      if (pulse_width < PW_MIN) pulse_width = PW_MIN;
+	      paused = 0;
+	    }
+	  if (PINB & (1<<PB1))
+	    {
+	      button_seen = 1;
+	      if (paused) 
+		paused = 0;
+	      else 
+		paused = 1;
+	    }
+	  }
+	else
+	  {
+	    // disable automatic key repeat
+	    if (!(PINB & ((1<<PB0)|(1<<PB1)|(1<<PB2))))
+	      button_seen = 0;	// need a release before press.
+
+	  }
+
+      if (paused)
+        OCR1B = pwm_stop_val;
+      else
+        OCR1B = pulse_width;
+
+      if (!(counter++ % 8))	// (1<<(led_what-1))))
         {
-          _delay_ms(100.0); LED_PORT |=   LED_BITS;         // pull high ...
-          _delay_ms(100.0); LED_PORT &= ~(LED_BITS);        // pull low ...
-          rs232_send_hex(pulse_width>>8);	  
-          rs232_send_hex(pulse_width&0xff);	  
-          rs232_send('\r');	  
-          rs232_send('\n');	  
+          _delay_ms(10.0); 
+	  if (pulse_width > pwm_stop_val)
+	    LED_PORT |=   GREEN_LED_BITS;         // pull high ...
+	  if (pulse_width < pwm_stop_val)
+	    LED_PORT |=   RED_LED_BITS;           // pull high ...
+          _delay_ms(10.0);
+	  if (paused) LED_PORT &= ~(LED_BITS);        // pull low ...
+	  _delay_ms(80.0);
+	  if (!paused) LED_PORT &= ~(LED_BITS);        // pull low ...
+          // rs232_send_hex(pulse_width>>8);	  
+          // rs232_send_hex(pulse_width&0xff);	  
+          // rs232_send('\r');	  
+          // rs232_send('\n');	  
 	}
       else
         {
