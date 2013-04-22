@@ -335,7 +335,7 @@ incr_vmaj::
 
 
 rename:: 
-	test -d .svn || ( \
+	test -d .svn || git branch || ( \
 	n="$(PROJ)-$(VERSION)"; rm -f ../$(PROJ); \
 	mv `/bin/pwd` "../$$n" 2> /dev/null; ln -s $$n ../$(PROJ); true )
 
@@ -343,13 +343,13 @@ rename::
 bin dist-bin:: $(NAME).hex $(NAME)-ee.hex version.h install.sh
 	n="$(PROJ)-$(VERSION)"; ln -s . $$n; \
 	tar zcvf ../$$n-bin.tgz $$n/$(NAME).hex $$n/$(NAME)-ee.hex $$n/install.sh $$n/doc/matrix.txt; \
-	rm $$n; test -d .svn || mv `/bin/pwd` "../$$n" 2> /dev/null; true
+	rm $$n; test -d .svn || git branch || mv `/bin/pwd` "../$$n" 2> /dev/null; true
 
 dist:: distclean version.h
 	n="$(PROJ)-$(VERSION)"; \
 	test -f ../$$n.tgz && (echo "WARNING: ../$$n.tgz exists, press ENTER to overwrite"; read a); \
 	ln -s . $$n; tar zcvf "../$$n.tgz" $(DIST_EXCLUDE) --exclude "$$n/$$n" $$n/*; \
-	rm $$n; test -d .svn || mv `/bin/pwd` "../$$n" 2> /dev/null; true
+	rm $$n; test -d .svn || git branch || mv `/bin/pwd` "../$$n" 2> /dev/null; true
 
 else
 version dist bin dist-bin::; $(MAKE) -C $(TOP_DIR) $@

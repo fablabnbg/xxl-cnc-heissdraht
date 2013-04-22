@@ -10,10 +10,13 @@
  *   PB4:	OUT motor PWM
  *
  *   PD2:	IN motor sensor
- *   PD3:	IN hall index sensor
+ *   PD3:	IN hall index sensor (aka INT1)
  *   PD4:	OUT red LED
  *   PD5:	OUT green LED
  *
+ * 2013-04-10, V0.1, jw - initial draught.
+ * 2013-04-12, V0.2, jw - stdio removed. Not enough space.
+ * 2013-04-22, V0.3, jw - added hall sensor and rs232 reporting
  */
 
 #include <ctype.h>
@@ -47,6 +50,13 @@
 
 #define T1TOP  22370		// 8000000/8*0.020
 
+static uint16_t hall_counter = 0;
+ISR(INT1_vect)
+{
+  hall_counter++;
+}
+
+#if 0	// tn2313 has not enough code space for stdio
 static int rs232_putchar(char ch, FILE *fp)
 {
   if (!rs232_headroom)
@@ -56,16 +66,26 @@ static int rs232_putchar(char ch, FILE *fp)
     }
   return rs232_send((uint8_t)ch);
 }
+#endif
 
-static uint8_t led_what = 3;	// default: flash once every second
-
+static uint8_t newline_seen = 0;	
 static void rs232_recv(uint8_t byte)
 {
   // just an echo back dummy.
   rs232_send('=');
   rs232_send(byte);
-  if (byte > '0' && byte < '9') 
-    led_what = byte - '0';
+  // if (byte > '0' && byte < '9') 
+  //   led_what = byte - '0';
+  if (byte == '\n')
+    newline_seen = 1;
+}
+
+static void hall_init()
+{
+  MCUCR = (0<<ISC11)|(1<<ISC10)|	// Any change on INT1 triggers (PD3)
+  	  (0<<ISC01)|(1<<ISC00);	// Any change on INT0 triggers (PD2)
+  GIMSK = (1<<INT1)|(0<<INT0)|(0<<PCIE);// enable INT1 only.
+  EIFR  = 0xff;				// clear any left over flags.
 }
 
 static void timer_init()
@@ -99,7 +119,6 @@ static void timer_init()
   // TIMSK = (1<<ICIE1)|	// enable input capture interrupt
   // 	  (1<<OCIE1B);		// enable ouput compare interrupt B
 
-  sei();			// enable interrupts.
 }
 
 
@@ -114,6 +133,9 @@ int main()
   PORTD	= (1<<PD2)|(1<<PD3);		// pullups for sensors
   PORTB	= (1<<PB0)|(1<<PB1)|(1<<PB2);	// pullups for switches
   timer_init();
+  hall_init();
+  sei();			// enable interrupts.
+
   uint16_t pwm_stop_val = (PW_MIN+PW_MAX)/2+PW_TUNED_STOP;
   OCR1B	= pulse_width = pwm_stop_val;	// start stopped.
 
@@ -135,6 +157,7 @@ int main()
 	      pulse_width += PW_BUT_INCR;
 	      if (pulse_width > PW_MAX) pulse_width = PW_MAX;
 	      paused = 0;
+              rs232_send('r');	  
 	    }
 	  if (PINB & (1<<PB2))
 	    { 
@@ -143,14 +166,21 @@ int main()
 	      pulse_width -= PW_BUT_INCR;
 	      if (pulse_width < PW_MIN) pulse_width = PW_MIN;
 	      paused = 0;
+              rs232_send('l');	  
 	    }
 	  if (PINB & (1<<PB1))
 	    {
 	      button_seen = 1;
 	      if (paused) 
-		paused = 0;
+	        {
+		  paused = 0;
+                  rs232_send('g');	  
+		}
 	      else 
-		paused = 1;
+	        {
+		  paused = 1;
+                  rs232_send('p');	  
+		}
 	    }
 	  }
 	else
@@ -177,14 +207,21 @@ int main()
 	  if (paused) LED_PORT &= ~(LED_BITS);        // pull low ...
 	  _delay_ms(80.0);
 	  if (!paused) LED_PORT &= ~(LED_BITS);        // pull low ...
-          // rs232_send_hex(pulse_width>>8);	  
-          // rs232_send_hex(pulse_width&0xff);	  
-          // rs232_send('\r');	  
-          // rs232_send('\n');	  
 	}
       else
         {
 	  _delay_ms(100.0);
+	}
+
+      if (newline_seen)
+        {
+          rs232_send_hex(pulse_width>>8);	  
+          rs232_send_hex(pulse_width&0xff);	  
+          rs232_send(' ');	  
+          rs232_send_hex(hall_counter>>8);	  
+          rs232_send_hex(hall_counter&0xff);	  
+          rs232_send('\r');	  
+          rs232_send('\n');	  
 	}
     }
 }
