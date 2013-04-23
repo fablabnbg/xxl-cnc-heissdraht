@@ -17,7 +17,11 @@
  * 2013-04-10, V0.1, jw - initial draught.
  * 2013-04-12, V0.2, jw - stdio removed. Not enough space.
  * 2013-04-22, V0.3, jw - added hall sensor and rs232 reporting.
- *                        Single char commands accepted. 
+ *                        Single char commands accepted:   
+ *                        '+' or 'l' are same as right button (rotates ccw),   
+ *                        '-' or 'r' are same as left button (rotates cw)   
+ *                        ' ' toggles pause/go. A printout is done, whenever 
+ *                        a command is received, even if illegal.
  */
 
 #include <ctype.h>
