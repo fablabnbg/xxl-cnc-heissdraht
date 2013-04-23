@@ -16,7 +16,8 @@
  *
  * 2013-04-10, V0.1, jw - initial draught.
  * 2013-04-12, V0.2, jw - stdio removed. Not enough space.
- * 2013-04-22, V0.3, jw - added hall sensor and rs232 reporting
+ * 2013-04-22, V0.3, jw - added hall sensor and rs232 reporting.
+ *                        Single char commands accepted. 
  */
 
 #include <ctype.h>
@@ -50,6 +51,8 @@
 
 #define T1TOP  22370		// 8000000/8*0.020
 
+#define HALL_PER_REV	1272	// or a bit less. 1274 = 13*98 ???
+
 static uint16_t hall_counter = 0;
 ISR(INT1_vect)
 {
@@ -68,16 +71,13 @@ static int rs232_putchar(char ch, FILE *fp)
 }
 #endif
 
-static uint8_t newline_seen = 0;	
+static uint8_t cmd_seen = 0;	
 static void rs232_recv(uint8_t byte)
 {
   // just an echo back dummy.
   rs232_send('=');
   rs232_send(byte);
-  // if (byte > '0' && byte < '9') 
-  //   led_what = byte - '0';
-  if (byte == '\n')
-    newline_seen = 1;
+  cmd_seen = byte;
 }
 
 static void hall_init()
@@ -150,27 +150,27 @@ int main()
     {
       if (!button_seen)
 	{
-	  if (PINB & (1<<PB0))
+	  if ((PINB & (1<<PB0)) || cmd_seen == '+' || cmd_seen == 'l')
 	    {
-	      button_seen = 1;
+	      if (!cmd_seen) button_seen = 1;
 	      if (paused) pulse_width = pwm_stop_val;
 	      pulse_width += PW_BUT_INCR;
 	      if (pulse_width > PW_MAX) pulse_width = PW_MAX;
 	      paused = 0;
-              rs232_send('r');	  
+              rs232_send('l');
 	    }
-	  if (PINB & (1<<PB2))
+	  if ((PINB & (1<<PB2)) || cmd_seen == '-' || cmd_seen == 'r')
 	    { 
-	      button_seen = 1;
+	      if (!cmd_seen) button_seen = 1;
 	      if (paused) pulse_width = pwm_stop_val;
 	      pulse_width -= PW_BUT_INCR;
 	      if (pulse_width < PW_MIN) pulse_width = PW_MIN;
 	      paused = 0;
-              rs232_send('l');	  
+              rs232_send('r');
 	    }
-	  if (PINB & (1<<PB1))
+	  if ((PINB & (1<<PB1)) || cmd_seen == ' ')
 	    {
-	      button_seen = 1;
+	      if (!cmd_seen) button_seen = 1;
 	      if (paused) 
 	        {
 		  paused = 0;
@@ -182,19 +182,33 @@ int main()
                   rs232_send('p');	  
 		}
 	    }
-	  }
-	else
-	  {
-	    // disable automatic key repeat
-	    if (!(PINB & ((1<<PB0)|(1<<PB1)|(1<<PB2))))
-	      button_seen = 0;	// need a release before press.
-
-	  }
+	}
+      else
+	{
+	  // disable automatic key repeat
+	  if (!(PINB & ((1<<PB0)|(1<<PB1)|(1<<PB2))))
+	    button_seen = 0;	// need a release before press.
+	  if (cmd_seen)
+	    rs232_send('!');
+	}
 
       if (paused)
         OCR1B = pwm_stop_val;
       else
         OCR1B = pulse_width;
+
+      if (cmd_seen)
+        {
+	  cmd_seen = 0;	// very small race
+          rs232_send_hex(pulse_width>>8);	  
+          rs232_send_hex(pulse_width&0xff);	  
+          rs232_send(' ');	  
+          rs232_send_hex(hall_counter>>8);	  
+          rs232_send_hex(hall_counter&0xff);	  
+          rs232_send('\r');	  
+          rs232_send('\n');	  
+	}
+
 
       if (!(counter++ % 8))	// (1<<(led_what-1))))
         {
@@ -211,17 +225,6 @@ int main()
       else
         {
 	  _delay_ms(100.0);
-	}
-
-      if (newline_seen)
-        {
-          rs232_send_hex(pulse_width>>8);	  
-          rs232_send_hex(pulse_width&0xff);	  
-          rs232_send(' ');	  
-          rs232_send_hex(hall_counter>>8);	  
-          rs232_send_hex(hall_counter&0xff);	  
-          rs232_send('\r');	  
-          rs232_send('\n');	  
 	}
     }
 }

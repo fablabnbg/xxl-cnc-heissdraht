@@ -78,7 +78,7 @@ Command mode algorithm:
  Additional commands are accepted on stdin: 
  '+' => right
  '-' => left
- '0' => stop
+ ' ' => toggle pause/go
  '1' ... '9' predefined speeds.
  '.' tenth introducer (with timeout waiting for another digit).
  
