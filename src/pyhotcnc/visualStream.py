@@ -20,4 +20,14 @@ class vStream(object):
 	def wait(self):
 		self.stream.flush()
 
+	def home(self):
+		self.stream.write('Homing')
+		self.stream.write('\n')
+		self.setZero()
+
+	def power(self,value):
+		self.stream.write('Power %f'%value)
+		self.stream.write('\n')
+
+
 

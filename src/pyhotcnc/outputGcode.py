@@ -1,7 +1,7 @@
 class outGcode(object):
 	def __init__(self, driver, axes=('W','X','Y','Z')):
 		self.driver=driver
-		self.template=(" %c%%.2f"*4)%axes+' F2500\n'
+		self.template=(" %c%%.2f"*4)%axes+' F1000\n'
 
 	def move(self,pos):
 		cmd="G1"+self.template%pos
@@ -17,4 +17,13 @@ class outGcode(object):
 
 	def wait(self):
 		self.driver.flush()
+
+	def home(self):
+		self.driver.home()
+		self.setZero()
+
+	def power(self,value):
+		if value>1: value=1
+		cmd="M103 P%i"%int(255*value)
+		self.driver.write(cmd)
 

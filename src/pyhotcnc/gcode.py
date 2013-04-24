@@ -6,6 +6,8 @@ MM_PER_INCH=2.45
 class Gcode(object):
 	def __init__(self):
 		self.coords=[(0,0,0,0)]
+		self.limitsMax=[-100000,-100000,-100000,-100000]
+		self.limitsMin=[100000,100000,100000,100000]
 		self.inches=False
 		self.absolute=True
 		self.offset=(0,0,0,0)
@@ -50,8 +52,8 @@ class Gcode(object):
 			return self.interpretT(num)
 		
 	def interpretG(self,num,data):
-		if num==0 :self.coords.append(self.getCoords(data))
-		elif num==1 :self.coords.append(self.getCoords(data))
+		if num==0 :self.appendCoords(self.getCoords(data))
+		elif num==1 :self.appendCoords(self.getCoords(data))
 		elif num==90: self.absolute=True
 		elif num==91: self.absolute=False
 		elif num==92 :self.setOffset(data)
@@ -90,3 +92,17 @@ class Gcode(object):
 		coords=self.getRawCoords(data)
 		self.offset=map(lambda a,b,c:c-a if not a is None else b, coords, self.offset, self.coords[-1])
 
+	def appendCoords(self,coord):
+		self.coords.append(coord)
+
+	def boundingBox(self):
+		limitsMin=[min(x) for x in zip(*self.coords)]
+		limitsMax=[max(x) for x in zip(*self.coords)]
+		res=[
+			(limitsMax[0],limitsMin[1],limitsMax[2],limitsMin[3]),
+			(limitsMax[0],limitsMax[1],limitsMax[2],limitsMax[3]),
+			(limitsMin[0],limitsMax[1],limitsMin[2],limitsMax[3]),
+			(limitsMin[0],limitsMin[1],limitsMin[2],limitsMin[3]),
+			(limitsMax[0],limitsMin[1],limitsMax[2],limitsMin[3])
+		]
+		return res

@@ -1,3 +1,4 @@
 sudo zypper in python-matplotlib-tk
 sudo zypper in python-numpy
-sudo zypper in python-serial
+sudo zypper in python-pyserial
+sudo zypper in python-pyparsing

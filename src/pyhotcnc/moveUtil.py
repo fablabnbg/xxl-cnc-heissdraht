@@ -7,5 +7,14 @@ def relMove(coord):
 def setZero(c):
 	return c._setZero()
 
+def push(c):
+	return c._push()
+
+def pop(c):
+	return c._pop()
+
+def home(c):
+	return c._home()
+
 def NoMove(c):
 	pass

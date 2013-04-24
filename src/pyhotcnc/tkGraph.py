@@ -15,14 +15,16 @@ class Graph(tk.Frame,object):
 		
 		self.a.grid(True)				# Set the axes grids on
 
-		self.a.set_xlim((0,ySize))
-		self.a.set_ylim((0,xSize))
+		self.xSize=xSize
+		self.ySize=ySize
 		
 		self.canvas = FigureCanvasTkAgg(self.f, master=self)	# The Canvas widget provides structured graphics facilities for Tkinter.
 		self.canvas.mpl_connect('button_press_event', self.rawOnClick)
 		
 		self.canvas.show()				# Aus matplotlib: display all figures and block until the figures have been closed
 		self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+		self.setOffset((0,0))
 
 	def addline(self,x,y):
 		self.curline=matplotlib.lines.Line2D([y],[x])
@@ -33,13 +35,24 @@ class Graph(tk.Frame,object):
 		x0.append(x)
 		y0.append(y)
 		self.curline.set_data(y0,x0)
-		self.canvas.draw()
+		self.redraw()
 
 	def rawOnClick(self,evt):
 		print evt.key
 		both=True if evt.key=='shift' else False
 		self.onClick(evt.ydata, evt.xdata, both)
 
+	def clear(self):
+		self.a.clear()
+
+	def setOffset(self,offset):
+		self.a.set_ylim((-offset[0],self.xSize-offset[0]))
+		self.a.set_xlim((-offset[1],self.ySize-offset[1]))
+		self.a.clear()
+		self.redraw()
+
+	def redraw(self):
+		self.canvas.draw()
 	
 if __name__=='__main__':
 	r=tk.Tk()

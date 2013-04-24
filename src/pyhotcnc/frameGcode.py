@@ -11,6 +11,7 @@ class FrameGcode(tk.Frame):
 			pMenu.add_cascade(label="Gcode", menu=menu)
 			menu.add_command(label="Open...", command=self.Open)
 			menu.add_command(label="Start Cutting", command=self.Start)
+			menu.add_command(label="Move along bounding box", command=self.mbb)
 		self.textbox=tk.Text(self)
 		self.textbox.pack(expand=True,fill=tk.BOTH)
 
@@ -22,9 +23,17 @@ class FrameGcode(tk.Frame):
 			self.textbox.delete(1.0,tk.END)
 			self.textbox.insert(tk.END,data)
 
-	def Start(self):
+	def changeInput(self,new_input):
 		oldin=self.cutter.input
 		self.cutter.nextInputs.append(oldin)
-		gcode=inputGcode.InputGcode(self.textbox.get(1.0,tk.END))
-		self.cutter.input=gcode
+		self.cutter.input=new_input
+
+	def Start(self):
+		new_input=inputGcode.InputGcode(self.textbox.get(1.0,tk.END))
+		self.changeInput(new_input)
+
+	def mbb(self):
+		new_input=inputGcode.InputGcode(self.textbox.get(1.0,tk.END),bounding_box=True)
+		self.changeInput(new_input)
+		
 

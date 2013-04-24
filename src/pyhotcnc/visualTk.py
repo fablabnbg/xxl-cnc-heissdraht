@@ -3,22 +3,23 @@ import moveUtil
 from tkGraph import Graph
 
 class vTk(tk.Frame,object):
-	def __init__(self,master=None,xSize=40,ySize=30):
+	def __init__(self,master=None,xSize=40,ySize=30,posVars=None):
 		tk.Frame.__init__(self,master)
 		self.moveQueue=[]
-		self.Wtext=tk.StringVar()
-		self.Xtext=tk.StringVar()
-		self.Ytext=tk.StringVar()
-		self.Ztext=tk.StringVar()
+		if posVars is None:
+			self.posVars=[]
+			for i in xrange(4):
+				self.posVars.append(tk.StringVar)
+		else:
+			self.posVars=posVars
 		self.WX=Graph(self,xSize=xSize,ySize=ySize,onClick=self.clickWX)
 		self.YZ=Graph(self,xSize=xSize,ySize=ySize,onClick=self.clickYZ)
 
-		tk.Label(self,textvariable=self.Wtext).pack(side=tk.TOP)
-		tk.Label(self,textvariable=self.Xtext).pack(side=tk.TOP)
 		self.WX.pack(side=tk.TOP)
-		tk.Label(self,textvariable=self.Ytext).pack(side=tk.TOP)
-		tk.Label(self,textvariable=self.Ztext).pack(side=tk.TOP)
 		self.YZ.pack(side=tk.TOP)
+		self.pos=(0,0,0,0)
+		self.offset=(0,0,0,0)
+		self.warp(self.pos)
 
 	def next(self):
 		if len(self.moveQueue)!=0:
@@ -27,26 +28,26 @@ class vTk(tk.Frame,object):
 			return moveUtil.NoMove
 
 	def setText(self,pos):
-		w=pos[0]
-		x=pos[1]
-		y=pos[2]
-		z=pos[3]
-		if not w is None: self.Wtext.set("W=%.2f"%w)
-		if not x is None: self.Xtext.set("X=%.2f"%x)
-		if not y is None: self.Ytext.set("Y=%.2f"%y)
-		if not y is None: self.Ztext.set("Z=%.2f"%z)
+		for i in range(4):
+			if not pos[i] is None:
+				self.posVars[i].set("%.2f"%pos[i])
 
 	def warp(self,pos):
 		self.setText(pos)
 		self.WX.addline(*pos[0:2])
 		self.YZ.addline(*pos[2:4])
+		self.pos=pos
 
 	def move(self,pos):
 		self.setText(pos)
 		self.WX.append(*pos[0:2])
 		self.YZ.append(*pos[2:4])
+		self.pos=pos
 
 	def setZero(self):
+		self.offset=map(lambda a,b:a+b,self.pos,self.offset)
+		self.WX.setOffset(self.offset[0:2])
+		self.YZ.setOffset(self.offset[2:4])
 		self.warp((0,0,0,0))
 
 	def clickWX(self,w,x,both):
@@ -71,3 +72,15 @@ class vTk(tk.Frame,object):
 
 	def wait(self):
 		pass
+
+	def home(self):
+		self.offset=(0,0,0,0)
+		self.pos=(0,0,0,0)
+		self.setZero()
+
+	def power(self,value):
+		val='red' if value>0.01 else 'white'
+		self.WX.a.set_axis_bgcolor(val)
+		self.YZ.a.set_axis_bgcolor(val)
+		self.WX.redraw()
+		self.YZ.redraw()

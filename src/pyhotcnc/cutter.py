@@ -4,11 +4,11 @@ class Cutter(object):
 		self.input=None
 		self.nextInputs=[]
 		self.pos=(0,0,0,0)
+		self.pos_stack=[]
 		if filter is None:
 			self.filter=lambda x:x
 		else:
 			self.filter=filter
-		self._WarpTo(self.pos)
 
 	def removeNone(self,pos):
 		return tuple(map(lambda a,b:a if not a is None else b,pos,self.pos))
@@ -43,6 +43,28 @@ class Cutter(object):
 		if not self.output is None:
 			for out in self.output:
 				out.setZero()
+		return self
+
+	def _home(self):
+		self.pos=(0,0,0,0)
+		if not self.output is None:
+			for out in self.output:
+				out.home()
+		return self
+
+	def _power(self, value):
+		if not self.output is None:
+			for out in self.output:
+				out.power(value)
+		return self
+
+
+	def _push(self):
+		self.pos_stack.append(self.pos)
+		return self
+
+	def _pop(self):
+		self._MoveTo(self.pos_stack.pop())
 		return self
 
 
