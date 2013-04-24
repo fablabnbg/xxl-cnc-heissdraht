@@ -26,7 +26,7 @@ if __name__=='__main__':
 	out1=visualTk.vTk(root,xSize=SIZE1,ySize=SIZE2,posVars=inTkc.coord)
 	out2=outputGcode.outGcode(driver=drvFabGrbl('/dev/ttyUSB0'))
 	out3=visualStream.vStream(sys.stdout)
-	c=cutter.Cutter(output=[out1,out2])
+	c=cutter.Cutter(output=[out1,out2,out3])
 	mc=MenuCutter(pMenu=menu,Cutter=c)
 	gb=frameGcode.FrameGcode(root,pMenu=menu,cutter=c)
 	gb.pack(side=tk.LEFT,fill=tk.BOTH,expand=True)
