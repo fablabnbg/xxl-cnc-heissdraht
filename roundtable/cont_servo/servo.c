@@ -22,6 +22,7 @@
  *                        '-' or 'r' are same as left button (rotates cw)   
  *                        ' ' toggles pause/go. A printout is done, whenever 
  *                        a command is received, even if illegal.
+ * 2013-05-01, V0.4, jw - speedup() function to allow an exponential speed curve
  */
 
 #include <ctype.h>
@@ -47,8 +48,8 @@
 #define T1TOP  22370		// 8000000/8*0.020
 #define PW_MIN   500		// 0.5 msec
 #define PW_MAX  2400		// 2.4 msec
-#define PW_BUT_INCR     20
-#define PW_TUNED_STOP	-12
+#define PW_BUT_INCR     3
+#define PW_TUNED_STOP	-24
 
 #define BUTTON_STEP_DIVISOR	500			// 200: 5 promille each 20msec
 #define BUTTON_STEP (((uint16_t)PW_MAX-PW_MIN)/BUTTON_STEP_DIVISOR)
@@ -62,6 +63,24 @@ ISR(INT1_vect)
 {
   hall_counter++;
 }
+
+int16_t speedup(int16_t speed)
+{
+  if (speed == 0) return 0;
+  int8_t dir = 1;
+  if (speed < 0)
+    {
+      dir = -1;
+      speed = -speed;
+    }
+
+  // with speed += 1
+  // -2 -1 0 1 2  3  4
+  // -9 -4 0 4 9 16 25
+  speed += 1;
+  return speed * speed * dir;
+}
+
 
 #if 0	// tn2313 has not enough code space for stdio
 static int rs232_putchar(char ch, FILE *fp)
@@ -149,6 +168,7 @@ int main()
   uint16_t counter = 0;
   uint8_t paused = 0;
   uint8_t button_seen = 0;
+  int16_t incr_counter = 0;
 
   for (;;)
     {
@@ -157,8 +177,13 @@ int main()
 	  if ((PINB & (1<<PB0)) || cmd_seen == '+' || cmd_seen == 'l')
 	    {
 	      if (!cmd_seen) button_seen = 1;
-	      if (paused) pulse_width = pwm_stop_val;
-	      pulse_width += PW_BUT_INCR;
+	      if (paused) 
+	        {
+		  pulse_width = pwm_stop_val;
+		  incr_counter = 0;
+		}
+	      incr_counter++;
+	      pulse_width = pwm_stop_val + speedup(incr_counter) * PW_BUT_INCR;
 	      if (pulse_width > PW_MAX) pulse_width = PW_MAX;
 	      paused = 0;
               rs232_send('l');
@@ -166,8 +191,13 @@ int main()
 	  if ((PINB & (1<<PB2)) || cmd_seen == '-' || cmd_seen == 'r')
 	    { 
 	      if (!cmd_seen) button_seen = 1;
-	      if (paused) pulse_width = pwm_stop_val;
-	      pulse_width -= PW_BUT_INCR;
+	      if (paused) 
+	        {
+		  pulse_width = pwm_stop_val;
+		  incr_counter = 0;
+		}
+	      incr_counter--;
+	      pulse_width = pwm_stop_val + speedup(incr_counter) * PW_BUT_INCR;
 	      if (pulse_width < PW_MIN) pulse_width = PW_MIN;
 	      paused = 0;
               rs232_send('r');

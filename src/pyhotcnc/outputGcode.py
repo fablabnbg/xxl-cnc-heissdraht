@@ -1,7 +1,7 @@
 class outGcode(object):
 	def __init__(self, driver, axes=('W','X','Y','Z')):
 		self.driver=driver
-		self.template=(" %c%%.2f"*4)%axes+' F1000\n'
+		self.template=(" %c%%.2f"*4)%axes+' F200\n'
 
 	def move(self,pos):
 		cmd="G1"+self.template%pos

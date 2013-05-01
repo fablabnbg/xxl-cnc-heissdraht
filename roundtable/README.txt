@@ -5,6 +5,20 @@ Continuous Servo
 
 Servo
 -----
+options: 
+  Hitec HS-311 , 4,1 x 2 x 3,6 cm cr-ok, 10 EUR
+  BMS-705 26 g	(42 x 21.5 x 22 mm) 4.7 kg-cm 0.13 sec @ 60 deg	 15 EUR amazon, cr??
+  CS-90BB (32.1 g) 22 x 44 x 29 mm (2.6 kg-cm)	0.23 sec @ 60 deg $17.99 cr??
+  CS-3, (3 kg) 35 g 38,5 x 19 x 25 mm, 14EUR amazon, cr?
+  Carson 500502015 - CS-3, 31 Ncm,  0,17 sec. 45°, 38,5 x 19 x 32 mm, 11 EUR
+  	http://www.ebay.de/itm/261124575800
+
+
+TowerPro SG90 data:
+ * 9.0 g
+ * 23.1×12.2×29.0 mm
+ * 4.8V: 1.8 kg-cm
+ * 4.8V: 0.10 sec/60°
 TowerPro SG90 modifications:
  * cut away the two plastic notches from the main wheel to allow full 360 deg.
  * cut away the two metal fins from the potentiometer to allow full 360 deg.
