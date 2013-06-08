@@ -1844,8 +1844,7 @@
 <g
    inkscape:groupmode="layer"
    id="layer23"
-   inkscape:label="spacers"
-   sodipodi:insensitive="true">
+   inkscape:label="spacers">
   <g
      id="g51988"
      transform="translate(-442.91339,-3.5433073)">
@@ -1925,14 +1924,14 @@
      transform="translate(-194.88189,-2.529282e-8)">
     <path
        sodipodi:type="arc"
-       style="fill:none;stroke:#000000;stroke-width:0.03543307;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:0.03488795;stroke-miterlimit:4;stroke-dasharray:none"
        id="path52007"
        sodipodi:cx="574.01575"
        sodipodi:cy="113.38577"
        sodipodi:rx="56.692913"
        sodipodi:ry="56.692913"
        d="m 630.70866,113.38577 a 56.692913,56.692913 0 1 1 -113.38583,0 56.692913,56.692913 0 1 1 113.38583,0 z"
-       transform="translate(-272.83464,-7.0866207)" />
+       transform="matrix(1.015625,0,0,1.015625,-281.8036,-8.8582665)" />
     <path
        sodipodi:type="arc"
        style="fill:none;stroke:#000000;stroke-width:0.03690944;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
