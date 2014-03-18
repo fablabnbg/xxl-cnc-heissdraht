@@ -1,2 +1,0 @@
-#define HAVE_RS232 1
-#define RS232_RECEIVE 1
